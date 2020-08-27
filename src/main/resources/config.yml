@@ -1,0 +1,6 @@
+Connection:
+  Username: 'root'
+  Password: ''
+  Host: 'localhost'
+  port: 3306
+  Database: 'test'
