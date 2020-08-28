@@ -9,11 +9,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
 
 @AllArgsConstructor
-public class SetCommand implements CommandExecutor {
+public class DelCommand implements CommandExecutor {
 
     private final ShopController controller;
     private final SQLManager sqlManager;
@@ -28,16 +26,16 @@ public class SetCommand implements CommandExecutor {
         if (!player.hasPermission("loja.criar")) return true;
 
 
-        if (controller.getByPlayer(player) != null) {
-            player.sendMessage("§cVocê ja possui uma loja!");
+        if (controller.getByPlayer(player) == null) {
+            player.sendMessage("§cVocê não possui uma loja!");
             return true;
         }
 
-        Shop shop = new Shop(player.getName(), player.getLocation());
+        Shop shop = controller.getByPlayer(player);
 
-        CompletableFuture.runAsync(() -> sqlManager.insertShop(shop));
+        sqlManager.delete(shop);
 
-        player.sendMessage("§aLoja criada em sua localização!");
+        player.sendMessage("§cLoja deletada com sucesso!");
 
         return true;
     }

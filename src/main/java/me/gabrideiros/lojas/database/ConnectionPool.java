@@ -46,6 +46,7 @@ public class ConnectionPool {
 
     private void openConnection() {
 
+        System.out.println(host + ":" + port + ":" + database + ":" + username + ":" + password);
         HikariConfig config = new HikariConfig();
 
         config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
@@ -55,17 +56,13 @@ public class ConnectionPool {
         config.setUsername(username);
         config.setPassword(password);
 
-        config.setMaximumPoolSize(10);
-
-        config.addDataSourceProperty("autoReconnect", "true");
-
         dataSource = new HikariDataSource(config);
 
     }
 
     @SneakyThrows
     public void close(Connection connection, PreparedStatement ps, ResultSet rs) {
-     ﻿   if (connection != null) connection.close();
+        if (connection != null) connection.close();
         if (ps != null) ps.close();
         if (rs != null) rs.close();
     }
@@ -73,6 +70,6 @@ public class ConnectionPool {
     public void closeConnection() {
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
-        }﻿
+        }
     }
 }

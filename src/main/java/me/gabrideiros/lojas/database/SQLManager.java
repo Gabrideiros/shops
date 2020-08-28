@@ -16,11 +16,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 public class SQLManager {
 
     private final ConnectionPool pool;
     private final ShopController controller;
+
+    private final Main plugin;
 
     private final Gson gson;
 
@@ -30,9 +33,13 @@ public class SQLManager {
 
         this.controller = controller;
 
+        this.plugin = plugin;
+
         gson = new GsonBuilder().setPrettyPrinting().create();;
 
         createTable();
+
+        loadShops();
 
     }
 
@@ -41,7 +48,7 @@ public class SQLManager {
 
         Connection connection = pool.getDataSource().getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Shops` (name VARCHAR(16), location VARCHAR(32), visits INTEGER, time LONG, notes LONGTEXT");
+        PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Shops` (name VARCHAR(16), location VARCHAR(100), visits INTEGER, time LONG, notes LONGTEXT)");
         ps.executeUpdate();
 
         pool.close(connection, ps, null);
@@ -73,6 +80,8 @@ public class SQLManager {
 
         }
 
+        plugin.getLogger().log(Level.INFO, "Foram carregados {0} lojas!", controller.getElements().size());
+
         pool.close(connection, ps, rs);
 
     }
@@ -88,7 +97,7 @@ public class SQLManager {
         ps.setString(2, Locations.serialize(shop.getLocation()));
         ps.setInt(3, shop.getVisits());
         ps.setLong(4, shop.getTime());
-        ps.setString(1, gson.toJson(shop.getNote()));
+        ps.setString(5, gson.toJson(shop.getNote()));
 
         ps.executeUpdate();
 
@@ -117,17 +126,19 @@ public class SQLManager {
     }
 
     @SneakyThrows
-    public void delete(String key) {
+    public void delete(Shop shop) {
 
         Connection connection = pool.getDataSource().getConnection();
 
         PreparedStatement ps = connection.prepareStatement("DELETE FROM `Shops` WHERE name=?");
 
-        ps.setString(1, key);
+        ps.setString(1, shop.getName());
 
         ps.executeUpdate();
 
         pool.close(connection, ps, null);
+
+        controller.getElements().remove(shop);
 
     }
 
