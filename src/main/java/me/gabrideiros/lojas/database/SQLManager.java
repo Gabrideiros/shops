@@ -21,17 +21,14 @@ import java.util.logging.Level;
 public class SQLManager {
 
     private final ConnectionPool pool;
-    private final ShopController controller;
 
     private final Main plugin;
 
     private final Gson gson;
 
-    public SQLManager(ShopController controller, Main plugin) {
+    public SQLManager(Main plugin) {
 
         this.pool = new ConnectionPool(plugin);
-
-        this.controller = controller;
 
         this.plugin = plugin;
 
@@ -76,11 +73,11 @@ public class SQLManager {
             Map<String, Integer> note = gson.fromJson(rs.getString("notes"), type);
 
             Shop shop = new Shop(name, location, visits, time, note);
-            controller.getElements().add(shop);
+            plugin.getController().getElements().add(shop);
 
         }
 
-        plugin.getLogger().log(Level.INFO, "Foram carregados {0} lojas!", controller.getElements().size());
+        plugin.getLogger().log(Level.INFO, "Foram carregados {0} lojas!", plugin.getController().getElements().size());
 
         pool.close(connection, ps, rs);
 
@@ -103,7 +100,7 @@ public class SQLManager {
 
         pool.close(connection, ps, null);
 
-        controller.getElements().add(shop);
+        plugin.getController().getElements().add(shop);
 
     }
 
@@ -138,7 +135,7 @@ public class SQLManager {
 
         pool.close(connection, ps, null);
 
-        controller.getElements().remove(shop);
+        plugin.getController().getElements().remove(shop);
 
     }
 

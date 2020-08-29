@@ -57,16 +57,21 @@ public class ItemButton {
 
     public ItemButton(Material material, int amount, String name, String... lore) {
         this.actions = new HashMap<>();
-        setItem(material, amount, name, lore);
+        setItem(material, amount, 1, name, lore);
+    }
+
+    public ItemButton(Material material, int data, int amount, String name, String... lore) {
+        this.actions = new HashMap<>();
+        setItem(material, data, amount, name, lore);
     }
 
     public ItemButton setItem(Material material, String name, String... lore) {
-        setItem(material, 1, name, lore);
+        setItem(material, 0, 1, name, lore);
         return this;
     }
 
-    public ItemButton setItem(Material material, int amount, String name, String... lore) {
-        final ItemStack item = new ItemStack(material, amount);
+    public ItemButton setItem(Material material, int data, int amount, String name, String... lore) {
+        final ItemStack item = new ItemStack(material, amount, (short) data);
         final ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
@@ -136,7 +141,6 @@ public class ItemButton {
     }
 
     public ItemButton setHead(String name) {
-        final ItemStack item = new ItemStack(Material.SKULL_ITEM, (short) 3);
         final SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setOwner(name);
         item.setItemMeta(meta);

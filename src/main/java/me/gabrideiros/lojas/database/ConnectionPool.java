@@ -56,6 +56,9 @@ public class ConnectionPool {
         config.setUsername(username);
         config.setPassword(password);
 
+        config.setMaximumPoolSize(10);
+        config.addDataSourceProperty("autoRecconnect", "true");
+
         dataSource = new HikariDataSource(config);
 
     }

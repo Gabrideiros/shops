@@ -132,16 +132,18 @@ public class PaginatedGUIBuilder {
         return defaultCancell;
     }
 
-    public void setDefaultCancell(boolean defaultCancell) {
+    public PaginatedGUIBuilder setDefaultCancell(boolean defaultCancell) {
         this.defaultCancell = defaultCancell;
+        return this;
     }
 
     public boolean isDefaultAllCancell() {
         return defaultAllCancell;
     }
 
-    public void setDefaultAllCancell(boolean defaultAllCancell) {
+    public PaginatedGUIBuilder setDefaultAllCancell(boolean defaultAllCancell) {
         this.defaultAllCancell = defaultAllCancell;
+        return this;
     }
 
     public PaginatedGUIBuilder setButton(int slot, ItemButton button) {

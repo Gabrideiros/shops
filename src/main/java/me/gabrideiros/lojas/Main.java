@@ -1,5 +1,7 @@
 package me.gabrideiros.lojas;
 
+import dev.arantes.inventorymenulib.listeners.InventoryListener;
+import lombok.Getter;
 import me.gabrideiros.lojas.commands.DelCommand;
 import me.gabrideiros.lojas.commands.SetCommand;
 import me.gabrideiros.lojas.commands.ShopsCommand;
@@ -8,6 +10,7 @@ import me.gabrideiros.lojas.database.SQLManager;
 import me.gabrideiros.lojas.gui.ShopsInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@Getter
 public class Main extends JavaPlugin {
 
     private ShopController controller;
@@ -23,9 +26,11 @@ public class Main extends JavaPlugin {
 
         controller = new ShopController();
 
-        sqlManager = new SQLManager(controller, this);
+        sqlManager = new SQLManager(this);
 
-        inventory = new ShopsInventory(controller);
+        inventory = new ShopsInventory(this);
+
+        new InventoryListener(this);
 
         registerCommands();
 
