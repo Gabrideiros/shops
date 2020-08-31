@@ -34,7 +34,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.*;
 
 public class ItemButton {
@@ -131,7 +136,9 @@ public class ItemButton {
 
     public ItemButton addLore(String... lines) {
         final ItemMeta meta = item.getItemMeta();
-        final List<String> lore = meta.getLore();
+        List<String> lore = meta.getLore();
+
+        if (lore == null) lore = new ArrayList<>();
 
         lore.addAll(Arrays.asList(lines));
 
@@ -194,5 +201,34 @@ public class ItemButton {
         }
 
         return actions.get(type);
+    }
+
+    public static String toBase64(ItemStack item) {
+        if(item == null) return "";
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+            dataOutput.writeObject(item);
+            dataOutput.close();
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static ItemStack fromBase64(String string) {
+        if(string == null) return new ItemStack(Material.AIR);
+        ItemStack item = new ItemStack(Material.AIR);
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(string));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            item = (ItemStack) dataInput.readObject();
+            dataInput.close();
+            return item;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return item;
     }
 }

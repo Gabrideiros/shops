@@ -2,12 +2,14 @@ package me.gabrideiros.lojas;
 
 import dev.arantes.inventorymenulib.listeners.InventoryListener;
 import lombok.Getter;
-import me.gabrideiros.lojas.commands.DelCommand;
-import me.gabrideiros.lojas.commands.SetCommand;
-import me.gabrideiros.lojas.commands.ShopsCommand;
+import me.gabrideiros.lojas.commands.setshop.SetCommand;
+import me.gabrideiros.lojas.commands.shop.ShopCommand;
+import me.gabrideiros.lojas.commands.shops.ShopsCommand;
 import me.gabrideiros.lojas.controller.ShopController;
 import me.gabrideiros.lojas.database.SQLManager;
-import me.gabrideiros.lojas.gui.ShopsInventory;
+import me.gabrideiros.lojas.gui.ShopInventory;
+import me.gabrideiros.lojas.timers.VerifyTimer;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -17,7 +19,7 @@ public class Main extends JavaPlugin {
 
     private SQLManager sqlManager;
 
-    private ShopsInventory inventory;
+    private ShopInventory inventory;
 
     @Override
     public void onEnable() {
@@ -28,11 +30,13 @@ public class Main extends JavaPlugin {
 
         sqlManager = new SQLManager(this);
 
-        inventory = new ShopsInventory(this);
+        inventory = new ShopInventory(this);
 
         new InventoryListener(this);
 
         registerCommands();
+
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new VerifyTimer(controller, sqlManager), 20 * 60 * 60, 20 * 60 * 60);
 
     }
 
@@ -42,8 +46,10 @@ public class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("setloja").setExecutor(new SetCommand(controller, sqlManager));
-        getCommand("delloja").setExecutor(new DelCommand(controller, sqlManager));
-        getCommand("lojas").setExecutor(new ShopsCommand(inventory));
+
+        new ShopsCommand(this, inventory);
+        new SetCommand(this, controller, sqlManager, inventory);
+        new ShopCommand(this, controller, inventory);
+
     }
 }
