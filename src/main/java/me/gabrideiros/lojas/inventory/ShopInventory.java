@@ -28,27 +28,35 @@ public class ShopInventory {
 
     public void openShops(Player player, FilterType type) {
 
-        ArrayList<ItemButton> items = new ArrayList<>();
-
         List<Shop> shops = new ArrayList<>(plugin.getShopController().getElements());
 
         switch(type) {
             case VISITS:
-                shops.sort((a1, a2) -> Integer.compare(a2.getVisits(), a1.getVisits()));
+                shops.sort((a1, a2) -> {
+                    int priority = Boolean.compare(a2.isPriority(), a1.isPriority());
+                    return priority == 0 ? Integer.compare(a2.getVisits(), a1.getVisits()) : priority;
+                });
                 break;
             case BEST:
-                shops.sort((a1, a2) -> Integer.compare(a2.getNotes(), a1.getNotes()));
+                shops.sort((a1, a2) -> {
+                    int priority = Boolean.compare(a2.isPriority(), a1.isPriority());
+                    return priority == 0 ? Integer.compare(a2.getNotes(), a1.getNotes()) : priority;
+                });
                 break;
             case RECENT:
-                shops.sort((a1, a2) -> Long.compare(a2.getTime(), a1.getTime()));
+                shops.sort((a1, a2) -> {
+                    int priority = Boolean.compare(a2.isPriority(), a1.isPriority());
+                    return priority == 0 ? Long.compare(a2.getTime(), a1.getTime()) : priority;
+                });
                 break;
         }
 
-        shops.stream().filter(Shop::isPriority).map($ ->
+        List<ItemButton> items = shops.stream().map($ ->
                         new ItemButton(Material.SKULL_ITEM,
                                 3,
                                 1,
-                                "§d[Prioritária] §aLoja de " + $.getName())
+                                $.isPriority() ? "§d[Prioritária] §aLoja de " + $.getName() : "§aLoja de " + $.getName())
+                                .setHead($.getName())
                                 .setLore(
                                         "",
                                         "§7Visitas: §f" + $.getVisits(), "",
@@ -56,24 +64,7 @@ public class ShopInventory {
                                         "§7Clique direito: §fPara ver informações")
                                 .addAction(ClickType.LEFT, event -> teleport(player, $))
                                 .addAction(ClickType.RIGHT, event -> { player.closeInventory(); openShop($, player); })
-        );
-
-        List<ItemButton> priorityBaseItems = shops.stream().filter(Shop::isPriority).map($ -> new ItemButton(Material.SKULL_ITEM,
-                3,
-                1,
-                $.isPriority() ? "§d[Prioritária] §aLoja de " + $.getName() : "§aLoja de " + $.getName()).setHead($.getName())
-                .setLore(
-                        "",
-                        "§7Visitas: §f" + $.getVisits(), "",
-                        "§7Clique esquerdo: §fPara se teleportar",
-                        "§7Clique direito: §fPara ver informações")
-                .addAction(ClickType.LEFT, event -> teleport(player, $))
-                .addAction(ClickType.RIGHT, event -> {
-                    player.closeInventory();
-                    openShop($, player);
-                })).collect(Collectors.toList());
-
-        priorityBaseItems.addAll(items);
+        ).collect(Collectors.toList());
 
 
         PaginatedGUI paginatedGUI = new PaginatedGUIBuilder(
@@ -140,7 +131,7 @@ public class ShopInventory {
 
                 .setButton(53, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
 
-                .setContent(priorityBaseItems)
+                .setContent(items)
 
                 .setDefaultAllCancell(true)
 

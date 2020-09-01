@@ -1,5 +1,5 @@
 Connection:
-  Type: 'MySQLPooling'
+  Type: 'SQLite'
   Username: 'root'
   Password: ''
   Host: 'localhost'
