@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class ShopInventory {
@@ -43,28 +44,27 @@ public class ShopInventory {
                 break;
         }
 
-        shops.forEach($ ->
-                items.add(
+        shops.stream().filter(Shop::isPriority).map($ ->
                         new ItemButton(Material.SKULL_ITEM,
                                 3,
                                 1,
-                                $.isPriority() ? "§d[Prioritária] §aLoja de " + $.getName() : "§aLoja de " + $.getName()).setHead($.getName())
+                                "§d[Prioritária] §aLoja de " + $.getName())
                                 .setLore(
                                         "",
                                         "§7Visitas: §f" + $.getVisits(), "",
                                         "§7Clique esquerdo: §fPara se teleportar",
                                         "§7Clique direito: §fPara ver informações")
                                 .addAction(ClickType.LEFT, event -> teleport(player, $))
-                                .addAction(ClickType.RIGHT, event -> { player.closeInventory(); openShop($, player);})
-                ));
+                                .addAction(ClickType.RIGHT, event -> { player.closeInventory(); openShop($, player); })
+        );
 
         PaginatedGUI paginatedGUI = new PaginatedGUIBuilder(
                 "Lojas",
-                   "xxxxxxxxx" +
-                          "xxxxxxxxx" +
-                          "x#######x" +
-                          "<#######>" +
-                          "xxxxxxxxx"
+                "xxxxxxxxx" +
+                        "xxxxxxxxx" +
+                        "x#######x" +
+                        "<#######>" +
+                        "xxxxxxxxx"
         )
                 .setHotbarButton((byte) 3,
                 new ItemButton(
