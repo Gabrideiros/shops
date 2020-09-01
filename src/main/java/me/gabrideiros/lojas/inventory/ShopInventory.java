@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class ShopInventory {
@@ -57,6 +58,24 @@ public class ShopInventory {
                                 .addAction(ClickType.LEFT, event -> teleport(player, $))
                                 .addAction(ClickType.RIGHT, event -> { player.closeInventory(); openShop($, player);})
                 ));
+
+        List<ItemButton> priorityBaseItems = shops.stream().filter(Shop::isPriority).map($ -> new ItemButton(Material.SKULL_ITEM,
+                3,
+                1,
+                $.isPriority() ? "§d[Prioritária] §aLoja de " + $.getName() : "§aLoja de " + $.getName()).setHead($.getName())
+                .setLore(
+                        "",
+                        "§7Visitas: §f" + $.getVisits(), "",
+                        "§7Clique esquerdo: §fPara se teleportar",
+                        "§7Clique direito: §fPara ver informações")
+                .addAction(ClickType.LEFT, event -> teleport(player, $))
+                .addAction(ClickType.RIGHT, event -> {
+                    player.closeInventory();
+                    openShop($, player);
+                })).collect(Collectors.toList());
+
+        priorityBaseItems.addAll(items);
+
 
         PaginatedGUI paginatedGUI = new PaginatedGUIBuilder(
                 "Lojas",
@@ -122,7 +141,7 @@ public class ShopInventory {
 
                 .setButton(53, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
 
-                .setContent(items)
+                .setContent(priorityBaseItems)
 
                 .setDefaultAllCancell(true)
 
