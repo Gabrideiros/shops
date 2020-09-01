@@ -28,8 +28,6 @@ public class ShopInventory {
 
     public void openShops(Player player, FilterType type) {
 
-        ArrayList<ItemButton> items = new ArrayList<>();
-
         List<Shop> shops = new ArrayList<>(plugin.getShopController().getElements());
 
         switch(type) {
@@ -44,22 +42,8 @@ public class ShopInventory {
                 break;
         }
 
-        shops.forEach($ ->
-                items.add(
-                        new ItemButton(Material.SKULL_ITEM,
-                                3,
-                                1,
-                                $.isPriority() ? "§d[Prioritária] §aLoja de " + $.getName() : "§aLoja de " + $.getName()).setHead($.getName())
-                                .setLore(
-                                        "",
-                                        "§7Visitas: §f" + $.getVisits(), "",
-                                        "§7Clique esquerdo: §fPara se teleportar",
-                                        "§7Clique direito: §fPara ver informações")
-                                .addAction(ClickType.LEFT, event -> teleport(player, $))
-                                .addAction(ClickType.RIGHT, event -> { player.closeInventory(); openShop($, player);})
-                ));
 
-        List<ItemButton> priorityBaseItems = shops.stream().filter(Shop::isPriority).map($ -> new ItemButton(Material.SKULL_ITEM,
+        List<ItemButton> nonPriorityItems = shops.stream().filter($ -> !$.isPriority()).map($ -> new ItemButton(Material.SKULL_ITEM,
                 3,
                 1,
                 $.isPriority() ? "§d[Prioritária] §aLoja de " + $.getName() : "§aLoja de " + $.getName()).setHead($.getName())
@@ -74,7 +58,23 @@ public class ShopInventory {
                     openShop($, player);
                 })).collect(Collectors.toList());
 
-        priorityBaseItems.addAll(items);
+
+        List<ItemButton> priorityItems = shops.stream().filter(Shop::isPriority).map($ -> new ItemButton(Material.SKULL_ITEM,
+                3,
+                1,
+                $.isPriority() ? "§d[Prioritária] §aLoja de " + $.getName() : "§aLoja de " + $.getName()).setHead($.getName())
+                .setLore(
+                        "",
+                        "§7Visitas: §f" + $.getVisits(), "",
+                        "§7Clique esquerdo: §fPara se teleportar",
+                        "§7Clique direito: §fPara ver informações")
+                .addAction(ClickType.LEFT, event -> teleport(player, $))
+                .addAction(ClickType.RIGHT, event -> {
+                    player.closeInventory();
+                    openShop($, player);
+                })).collect(Collectors.toList());
+
+        priorityItems.addAll(nonPriorityItems);
 
 
         PaginatedGUI paginatedGUI = new PaginatedGUIBuilder(
@@ -141,7 +141,7 @@ public class ShopInventory {
 
                 .setButton(53, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
 
-                .setContent(priorityBaseItems)
+                .setContent(priorityItems)
 
                 .setDefaultAllCancell(true)
 
