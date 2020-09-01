@@ -2,12 +2,19 @@ package me.gabrideiros.lojas;
 
 import dev.arantes.inventorymenulib.listeners.InventoryListener;
 import lombok.Getter;
+import me.gabrideiros.lojas.commands.advertising.AdvertisingCommand;
+import me.gabrideiros.lojas.commands.priorityshop.SetPriorityCommand;
 import me.gabrideiros.lojas.commands.setshop.SetCommand;
 import me.gabrideiros.lojas.commands.shop.ShopCommand;
 import me.gabrideiros.lojas.commands.shops.ShopsCommand;
-import me.gabrideiros.lojas.controller.ShopController;
-import me.gabrideiros.lojas.database.SQLManager;
-import me.gabrideiros.lojas.gui.ShopInventory;
+import me.gabrideiros.lojas.controllers.AdvertisingController;
+import me.gabrideiros.lojas.controllers.ShopController;
+import me.gabrideiros.lojas.database.*;
+import me.gabrideiros.lojas.inventory.ShopInventory;
+import me.gabrideiros.lojas.services.AdvertisingService;
+import me.gabrideiros.lojas.services.ShopService;
+import me.gabrideiros.lojas.timers.AdvertisingTimer;
+import me.gabrideiros.lojas.timers.SaveTimer;
 import me.gabrideiros.lojas.timers.VerifyTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,20 +22,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 @Getter
 public class Main extends JavaPlugin {
 
-    private ShopController controller;
+    private ShopController shopController;
+    private AdvertisingController advertisingController;
 
-    private SQLManager sqlManager;
+    private ShopService shopService;
+    private AdvertisingService advertisingService;
+
+    private Storage storage;
 
     private ShopInventory inventory;
+
+    private int saveTime;
+    private int verifyTime;
+    private int advertisingTime;
 
     @Override
     public void onEnable() {
 
         saveDefaultConfig();
 
-        controller = new ShopController();
+        loadConfiguration();
 
-        sqlManager = new SQLManager(this);
+        shopController = new ShopController();
+        advertisingController = new AdvertisingController();
+
+        openStorage();
+
+        shopService = new ShopService(this, shopController, storage);
+        advertisingService = new AdvertisingService(this, advertisingController, storage);
 
         inventory = new ShopInventory(this);
 
@@ -36,20 +57,48 @@ public class Main extends JavaPlugin {
 
         registerCommands();
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new VerifyTimer(controller, sqlManager), 20 * 60 * 60, 20 * 60 * 60);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new SaveTimer(shopService, advertisingService), 20 * 60 * saveTime, 20 * 60 * saveTime);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new VerifyTimer(shopController, advertisingController, shopService, advertisingService), 20 * 60 * verifyTime, 20 * 60 * verifyTime);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new AdvertisingTimer(advertisingController), 20 * 60 * advertisingTime, 20 * 60 * advertisingTime);
 
     }
 
     @Override
     public void onDisable() {
-        sqlManager.close();
+        shopService.close();
+        advertisingService.close();
+        storage.closeConnection();
     }
 
     private void registerCommands() {
 
         new ShopsCommand(this, inventory);
-        new SetCommand(this, controller, sqlManager, inventory);
-        new ShopCommand(this, controller, inventory);
+        new SetCommand(this, shopController, shopService, advertisingController, advertisingService, inventory);
+        new ShopCommand(this, shopController, advertisingController, shopService, advertisingService, inventory);
+        new SetPriorityCommand(this, shopController);
+        new AdvertisingCommand(this, shopController, advertisingController, advertisingService);
+    }
 
+    public void openStorage() {
+
+        String type = getConfig().getString("Connection.Type");
+
+        switch (type) {
+            case "MySQL":
+                storage = new MySQLDatabase(this);
+                break;
+            case "MySQLPooling":
+                storage = new PoolingDatabase(this);
+                break;
+            default:
+                storage = new SQLDatabase(this, "data.db");
+                break;
+        }
+    }
+
+    public void loadConfiguration() {
+        saveTime = getConfig().getInt("SaveTime");
+        verifyTime = getConfig().getInt("VerifyTime");
+        advertisingTime = getConfig().getInt("AdvertisingTime");
     }
 }

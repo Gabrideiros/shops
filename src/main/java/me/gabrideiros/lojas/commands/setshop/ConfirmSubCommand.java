@@ -1,12 +1,15 @@
 package me.gabrideiros.lojas.commands.setshop;
 
 import me.gabrideiros.lojas.Main;
-import me.gabrideiros.lojas.commands.util.CommandBase;
-import me.gabrideiros.lojas.commands.util.SubCommand;
-import me.gabrideiros.lojas.controller.ShopController;
-import me.gabrideiros.lojas.database.SQLManager;
+import me.gabrideiros.lojas.commands.CommandBase;
+import me.gabrideiros.lojas.commands.SubCommand;
+import me.gabrideiros.lojas.controllers.AdvertisingController;
+import me.gabrideiros.lojas.controllers.ShopController;
 import me.gabrideiros.lojas.enums.ConfirmType;
-import me.gabrideiros.lojas.model.Shop;
+import me.gabrideiros.lojas.models.Advertising;
+import me.gabrideiros.lojas.models.Shop;
+import me.gabrideiros.lojas.services.AdvertisingService;
+import me.gabrideiros.lojas.services.ShopService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,18 +19,24 @@ import java.util.Map;
 
 public class ConfirmSubCommand extends SubCommand {
 
-    private final ShopController controller;
-    private final SQLManager sqlManager;
+    private final ShopController shopController;
+    private final AdvertisingController advertisingController;
+    private final ShopService shopService;
+    private final AdvertisingService advertisingService;
 
 
     private final Map<String, ConfirmType> confirm;
 
-    public ConfirmSubCommand(Main plugin, CommandBase command, ShopController controller, SQLManager sqlManager, Map<String, ConfirmType> confirm) {
+    public ConfirmSubCommand(Main plugin, CommandBase command, ShopController shopController, AdvertisingController advertisingController, ShopService shopService, AdvertisingService advertisingService, Map<String, ConfirmType> confirm) {
 
-        super(plugin, command, "confirmar", null, null, null);
+        super(plugin, command, "confirmar", null, null, "loja.criar");
 
-        this.controller = controller;
-        this.sqlManager = sqlManager;
+        this.advertisingController = advertisingController;
+        this.advertisingService = advertisingService;
+
+        this.shopController = shopController;
+        this.shopService = shopService;
+
         this.confirm = confirm;
     }
 
@@ -37,8 +46,6 @@ public class ConfirmSubCommand extends SubCommand {
         if (!(sender instanceof Player)) return;
 
         Player player = (Player) sender;
-
-        if (!player.hasPermission("loja.criar")) return;
 
         if (!confirm.containsKey(player.getName())) {
             player.sendMessage("§cVocê não possui nenhuma confirmação pendente!");
@@ -50,28 +57,33 @@ public class ConfirmSubCommand extends SubCommand {
         switch (type) {
             case CREATE:
 
-                if (controller.getByPlayer(player) != null) {
-                    player.sendMessage("§cVocê ja possui uma loja!");
+                if (shopController.getByPlayer(player) != null) {
+                    player.sendMessage("§cVocê já possui uma loja!");
                     return;
                 }
 
                 Shop shop = new Shop(player.getName(), player.getLocation());
 
-                CompletableFuture.runAsync(() -> sqlManager.insertShop(shop));
+                CompletableFuture.runAsync(() -> shopService.insert(shop));
 
                 player.sendMessage("§aLoja criada em sua localização!");
                 confirm.remove(player.getName());
                 break;
             case DELETE:
 
-                if (controller.getByPlayer(player) == null) {
+                if (shopController.getByPlayer(player) == null) {
                     player.sendMessage("§cVocê não possui uma loja!");
                     return;
                 }
 
-                Shop shop2 = controller.getByPlayer(player);
+                Shop shop2 = shopController.getByPlayer(player);
 
-                sqlManager.delete(shop2);
+                shopService.delete(shop2);
+
+                Advertising advertising = advertisingController.getByPlayer(player);
+
+                if (advertising != null)
+                    advertisingService.delete(advertising);
 
                 player.sendMessage("§cLoja deletada com sucesso!");
 

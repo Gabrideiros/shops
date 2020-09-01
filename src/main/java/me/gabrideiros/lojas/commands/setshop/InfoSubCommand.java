@@ -1,11 +1,11 @@
 package me.gabrideiros.lojas.commands.setshop;
 
 import me.gabrideiros.lojas.Main;
-import me.gabrideiros.lojas.commands.util.CommandBase;
-import me.gabrideiros.lojas.commands.util.SubCommand;
-import me.gabrideiros.lojas.controller.ShopController;
-import me.gabrideiros.lojas.gui.ShopInventory;
-import me.gabrideiros.lojas.model.Shop;
+import me.gabrideiros.lojas.commands.CommandBase;
+import me.gabrideiros.lojas.commands.SubCommand;
+import me.gabrideiros.lojas.controllers.ShopController;
+import me.gabrideiros.lojas.inventory.ShopInventory;
+import me.gabrideiros.lojas.models.Shop;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,7 +15,7 @@ public class InfoSubCommand extends SubCommand {
     private final ShopInventory inventory;
 
     public InfoSubCommand(Main plugin, CommandBase command, ShopController controller, ShopInventory inventory) {
-        super(plugin, command, "info", null, null, null);
+        super(plugin, command, "info", null, null, "loja.criar");
 
         this.controller = controller;
         this.inventory = inventory;
@@ -27,8 +27,6 @@ public class InfoSubCommand extends SubCommand {
         if (!(sender instanceof Player)) return;
 
         Player player = (Player) sender;
-
-        if (!player.hasPermission("loja.criar")) return;
 
         if (controller.getByPlayer(player) == null) {
             player.sendMessage("§cVocê não possui uma loja!");

@@ -1,0 +1,49 @@
+package me.gabrideiros.lojas.commands.advertising;
+
+import me.gabrideiros.lojas.Main;
+import me.gabrideiros.lojas.commands.CommandBase;
+import me.gabrideiros.lojas.commands.SubCommand;
+import me.gabrideiros.lojas.controllers.AdvertisingController;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.Map;
+
+public class CreateSubCommand extends SubCommand {
+
+    private final AdvertisingController advertisingController;
+    private final Map<String, String> confirm;
+
+    public CreateSubCommand(Main plugin, CommandBase command, AdvertisingController advertisingController, Map<String, String> confirm) {
+        super(plugin, command, "criar", "§c[!] Utilize /propaganda criar <mensagem>.", null, "loja.criar");
+
+        this.advertisingController = advertisingController;
+
+        this.confirm = confirm;
+    }
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+
+        if (!(sender instanceof Player)) return;
+
+        Player player = (Player) sender;
+
+        if (args.length < 2) {
+            player.sendMessage(getUsage());
+            return;
+        }
+
+        if (advertisingController.getByPlayer(player) != null) {
+            player.sendMessage("§cVocê já possui uma propaganda!");
+            return;
+        }
+        args[0] = "";
+        String message = String.join(" ", args);
+
+        confirm.put(player.getName(), message);
+
+        player.sendMessage("§aDigite '/propaganda confirmar' caso realmente deseja criar uma propaganda!");
+
+    }
+}

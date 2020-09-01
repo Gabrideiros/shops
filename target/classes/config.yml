@@ -1,6 +1,11 @@
 Connection:
+  Type: 'MySQLPooling'
   Username: 'root'
   Password: ''
   Host: 'localhost'
   Port: 3306
   Database: 'test'
+
+SaveTime: 5
+AdvertisingTime: 15
+VerifyTime: 60

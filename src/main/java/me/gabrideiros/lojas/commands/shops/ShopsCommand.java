@@ -1,9 +1,9 @@
 package me.gabrideiros.lojas.commands.shops;
 
 import me.gabrideiros.lojas.Main;
-import me.gabrideiros.lojas.commands.util.CommandBase;
+import me.gabrideiros.lojas.commands.CommandBase;
 import me.gabrideiros.lojas.enums.FilterType;
-import me.gabrideiros.lojas.gui.ShopInventory;
+import me.gabrideiros.lojas.inventory.ShopInventory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

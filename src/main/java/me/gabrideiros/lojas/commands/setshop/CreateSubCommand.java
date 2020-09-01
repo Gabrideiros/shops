@@ -1,8 +1,8 @@
 package me.gabrideiros.lojas.commands.setshop;
 
 import me.gabrideiros.lojas.Main;
-import me.gabrideiros.lojas.commands.util.CommandBase;
-import me.gabrideiros.lojas.commands.util.SubCommand;
+import me.gabrideiros.lojas.commands.CommandBase;
+import me.gabrideiros.lojas.commands.SubCommand;
 import me.gabrideiros.lojas.enums.ConfirmType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,11 +28,9 @@ public class CreateSubCommand extends SubCommand {
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("loja.criar")) return;
-
         confirm.put(player.getName(), ConfirmType.CREATE);
 
-        player.sendMessage("§aCaso realmente deseja criar uma loja, digite /setloja confirmar!");
+        player.sendMessage("§aDigite '/setloja confirmar' caso realmente deseja criar uma loja!");
 
     }
 }

@@ -25,9 +25,10 @@
 
 package dev.arantes.inventorymenulib.buttons;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +41,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class ItemButton {
@@ -201,6 +203,29 @@ public class ItemButton {
         }
 
         return actions.get(type);
+    }
+
+    public static ItemStack getSkull(String url) {
+        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
+        if(url == null || url.isEmpty()) return new ItemStack(Material.SKULL_ITEM, 3);
+        SkullMeta skullMeta = (SkullMeta)skull.getItemMeta();
+        GameProfile profile = new GameProfile(UUID.randomUUID(), (String)null);
+        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
+        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+        Field profileField = null;
+        try {
+            profileField = skullMeta.getClass().getDeclaredField("profile");
+        } catch (NoSuchFieldException | SecurityException e) {
+            e.printStackTrace();
+        }
+        profileField.setAccessible(true);
+        try {
+            profileField.set(skullMeta, profile);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        skull.setItemMeta((ItemMeta)skullMeta);
+        return skull;
     }
 
     public static String toBase64(ItemStack item) {

@@ -1,10 +1,10 @@
 package me.gabrideiros.lojas.commands.shop;
 
 import me.gabrideiros.lojas.Main;
-import me.gabrideiros.lojas.commands.util.CommandBase;
-import me.gabrideiros.lojas.commands.util.SubCommand;
-import me.gabrideiros.lojas.controller.ShopController;
-import me.gabrideiros.lojas.model.Shop;
+import me.gabrideiros.lojas.commands.CommandBase;
+import me.gabrideiros.lojas.commands.SubCommand;
+import me.gabrideiros.lojas.controllers.ShopController;
+import me.gabrideiros.lojas.models.Shop;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -33,6 +33,11 @@ public class EvaluateSubCommand extends SubCommand {
         }
 
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
+
+        if (player.getName().equalsIgnoreCase(offlinePlayer.getName())) {
+            player.sendMessage("§cVocê não pode avaliar sua própria loja!");
+            return;
+        }
 
         if (controller.getByName(offlinePlayer.getName()) == null) {
             player.sendMessage("§cEste jogador não possui uma loja!");
