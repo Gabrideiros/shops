@@ -40,7 +40,7 @@ public class ShopCommand extends CommandBase {
             sender.sendMessage(new String[]{
                     "",
                     "§7 * §e/loja <nick> §7 - Para ver a loja de um jogador.",
-                    "§7 * §e/loja avaliar §7 - Para avaliar uma loja.",
+                    "§7 * §e/loja avaliar <nick> §7 - Para avaliar uma loja.",
                     ""
             });
             return true;

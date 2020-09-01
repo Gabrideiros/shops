@@ -9,6 +9,7 @@ import me.gabrideiros.lojas.enums.ConfirmType;
 import me.gabrideiros.lojas.inventory.ShopInventory;
 import me.gabrideiros.lojas.services.AdvertisingService;
 import me.gabrideiros.lojas.services.ShopService;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -17,17 +18,17 @@ import java.util.Map;
 
 public class SetCommand extends CommandBase {
 
-    public SetCommand(Main plugin, ShopController controller, ShopService shopService, AdvertisingController advertisingController, AdvertisingService advertisingService, ShopInventory inventory) {
+    public SetCommand(Main plugin, ShopController controller, ShopService shopService, AdvertisingController advertisingController, AdvertisingService advertisingService, ShopInventory inventory, Economy economy) {
         super(plugin, "setloja", null);
 
         Map<String, ConfirmType> confirm = new HashMap<>();
 
-        register(new CreateSubCommand(plugin, this, confirm));
+        register(new CreateSubCommand(plugin, this, confirm, economy));
         register(new DelSubCommand(plugin, this, confirm));
         register(new TimeSubCommand(plugin, this , controller));
-        register(new RenewSubCommand(plugin, this, controller));
+        register(new RenewSubCommand(plugin, this, controller, economy));
         register(new HomeSubCommand(plugin, this, controller));
-        register(new ConfirmSubCommand(plugin, this, controller, advertisingController, shopService, advertisingService, confirm));
+        register(new ConfirmSubCommand(plugin, this, controller, advertisingController, shopService, advertisingService, confirm, economy));
         register(new InfoSubCommand(plugin, this, controller, inventory));
 
     }

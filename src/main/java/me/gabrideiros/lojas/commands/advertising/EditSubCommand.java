@@ -6,6 +6,7 @@ import me.gabrideiros.lojas.commands.SubCommand;
 import me.gabrideiros.lojas.controllers.AdvertisingController;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
 
@@ -45,6 +46,16 @@ public class EditSubCommand extends SubCommand {
         confirm.put(player.getName(), message);
 
         player.sendMessage("§aDigite '/propaganda confirmar' caso realmente deseja editar sua propaganda!");
+
+        String name = player.getName();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                confirm.remove(name);
+            }
+        }.runTaskLater(getPlugin(), 20 * 30);
 
     }
 }

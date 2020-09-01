@@ -6,6 +6,7 @@ import me.gabrideiros.lojas.commands.SubCommand;
 import me.gabrideiros.lojas.controllers.AdvertisingController;
 import me.gabrideiros.lojas.controllers.ShopController;
 import me.gabrideiros.lojas.services.AdvertisingService;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -14,14 +15,14 @@ import java.util.HashMap;
 
 public class AdvertisingCommand extends CommandBase {
 
-    public AdvertisingCommand(Main plugin, ShopController shopController, AdvertisingController advertisingController, AdvertisingService advertisingService) {
+    public AdvertisingCommand(Main plugin, ShopController shopController, AdvertisingController advertisingController, AdvertisingService advertisingService, Economy economy) {
         super(plugin, "propaganda", null, null);
 
         Map<String, String> confirm = new HashMap<>();
 
-        register(new ConfirmSubCommand(plugin, this, shopController, advertisingController, advertisingService, confirm));
+        register(new ConfirmSubCommand(plugin, this, shopController, advertisingController, advertisingService, confirm, economy));
         register(new EditSubCommand(plugin, this, advertisingController, confirm));
-        register(new CreateSubCommand(plugin, this, advertisingController, confirm));
+        register(new CreateSubCommand(plugin, this, advertisingController, confirm, economy));
 
     }
 

@@ -30,6 +30,11 @@ public class ShopInventory {
 
         List<Shop> shops = new ArrayList<>(plugin.getShopController().getElements());
 
+        if (shops.size() < 1) {
+            player.sendMessage("§cAinda não existe lojas criadas!");
+            return;
+        }
+
         switch(type) {
             case VISITS:
                 shops.sort((a1, a2) -> {

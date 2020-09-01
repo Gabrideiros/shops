@@ -7,6 +7,7 @@ import me.gabrideiros.lojas.controllers.AdvertisingController;
 import me.gabrideiros.lojas.controllers.ShopController;
 import me.gabrideiros.lojas.models.Advertising;
 import me.gabrideiros.lojas.services.AdvertisingService;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,8 +19,9 @@ public class ConfirmSubCommand extends SubCommand {
     private final AdvertisingController advertisingController;
     private final AdvertisingService advertisingService;
     private final Map<String, String> confirm;
+    private final Economy economy;
 
-    public ConfirmSubCommand(Main plugin, CommandBase command, ShopController shopController, AdvertisingController advertisingController, AdvertisingService advertisingService, Map<String, String> confirm) {
+    public ConfirmSubCommand(Main plugin, CommandBase command, ShopController shopController, AdvertisingController advertisingController, AdvertisingService advertisingService, Map<String, String> confirm, Economy economy) {
         super(plugin, command, "confirmar", null, null, "loja.criar");
 
         this.shopController = shopController;
@@ -27,6 +29,7 @@ public class ConfirmSubCommand extends SubCommand {
         this.advertisingService = advertisingService;
 
         this.confirm = confirm;
+        this.economy = economy;
     }
 
     @Override
@@ -57,6 +60,12 @@ public class ConfirmSubCommand extends SubCommand {
 
         if (shopController.getByPlayer(player) == null) {
             player.sendMessage("§cVocê não possui uma loja!");
+            confirm.remove(player.getName());
+            return;
+        }
+
+        if (economy.getBalance(player) < 250000) {
+            player.sendMessage("§cVocê precisa de 250k para criar uma propaganda!");
             return;
         }
 

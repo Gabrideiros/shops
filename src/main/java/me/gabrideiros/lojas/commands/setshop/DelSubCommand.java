@@ -6,6 +6,7 @@ import me.gabrideiros.lojas.commands.SubCommand;
 import me.gabrideiros.lojas.enums.ConfirmType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
 
@@ -31,5 +32,14 @@ public class DelSubCommand extends SubCommand {
 
         player.sendMessage("§cDigite '/setloja confirmar' caso realmente deseja deletar sua loja!");
 
+        String name = player.getName();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                confirm.remove(name);
+            }
+        }.runTaskLater(getPlugin(), 20 * 30);
     }
 }

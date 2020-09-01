@@ -1,6 +1,7 @@
 name: G-Lojas
 main: me.gabrideiros.lojas.Main
-version: 1.0.5
+version: 1.0.6
+depend: [Vault]
 author: Gabrideiros
 commands:
   loja:

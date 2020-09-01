@@ -16,7 +16,9 @@ import me.gabrideiros.lojas.services.ShopService;
 import me.gabrideiros.lojas.timers.AdvertisingTimer;
 import me.gabrideiros.lojas.timers.SaveTimer;
 import me.gabrideiros.lojas.timers.VerifyTimer;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -32,6 +34,8 @@ public class Main extends JavaPlugin {
 
     private ShopInventory inventory;
 
+    private Economy economy;
+
     private int saveTime;
     private int verifyTime;
     private int advertisingTime;
@@ -42,6 +46,12 @@ public class Main extends JavaPlugin {
         saveDefaultConfig();
 
         loadConfiguration();
+
+        if (!setupEconomy()) {
+            getServer().getConsoleSender().sendMessage("§cVault não encontrado! Desabilitando plugin...");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         shopController = new ShopController();
         advertisingController = new AdvertisingController();
@@ -73,10 +83,10 @@ public class Main extends JavaPlugin {
     private void registerCommands() {
 
         new ShopsCommand(this, inventory);
-        new SetCommand(this, shopController, shopService, advertisingController, advertisingService, inventory);
+        new SetCommand(this, shopController, shopService, advertisingController, advertisingService, inventory, economy);
         new ShopCommand(this, shopController, advertisingController, shopService, advertisingService, inventory);
         new SetPriorityCommand(this, shopController);
-        new AdvertisingCommand(this, shopController, advertisingController, advertisingService);
+        new AdvertisingCommand(this, shopController, advertisingController, advertisingService, economy);
     }
 
     public void openStorage() {
@@ -101,4 +111,17 @@ public class Main extends JavaPlugin {
         verifyTime = getConfig().getInt("VerifyTime");
         advertisingTime = getConfig().getInt("AdvertisingTime");
     }
+
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        economy = rsp.getProvider();
+        return economy != null;
+    }
+
 }

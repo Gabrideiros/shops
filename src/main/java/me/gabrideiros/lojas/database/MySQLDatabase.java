@@ -65,7 +65,7 @@ public class MySQLDatabase implements Storage {
         PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Shops` (name VARCHAR(16), location VARCHAR(100), visits INTEGER, time LONG, message LONGTEXT, items LONGTEXT, notes LONGTEXT, priority BOOLEAN)");
         ps.executeUpdate();
 
-        ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Advertising` (name VARCHAR(16), message LONGTEXT, time LONG, time LONG)");
+        ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Advertising` (name VARCHAR(16), message LONGTEXT, time LONG)");
         ps.executeUpdate();
 
         close(ps, null);
