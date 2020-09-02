@@ -6,12 +6,14 @@ import me.gabrideiros.lojas.database.Storage;
 import me.gabrideiros.lojas.models.Advertising;
 import me.gabrideiros.lojas.models.Shop;
 import me.gabrideiros.lojas.utils.Locations;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class AdvertisingService implements Service<Advertising> {
@@ -38,11 +40,12 @@ public class AdvertisingService implements Service<Advertising> {
 
         Connection connection = storage.getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO `Advertising` (`name`, `message`, `time`) VALUES (?, ?, ?)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO `Advertising` (`uuid`, `name`, `message`, `time`) VALUES (?, ?, ?, ?)");
 
-        ps.setString(1, advertising.getName());
-        ps.setString(2, advertising.getMessage());
-        ps.setLong(3, advertising.getTime());
+        ps.setString(1, advertising.getUuid().toString());
+        ps.setString(2, advertising.getName());
+        ps.setString(3, advertising.getMessage());
+        ps.setLong(4, advertising.getTime());
 
         ps.executeUpdate();
 
@@ -58,10 +61,10 @@ public class AdvertisingService implements Service<Advertising> {
 
         Connection connection = storage.getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("UPDATE `Advertising` SET message=? WHERE name=?");
+        PreparedStatement ps = connection.prepareStatement("UPDATE `Advertising` SET message=? WHERE uuid=?");
 
         ps.setString(1, advertising.getMessage());
-        ps.setString(2, advertising.getName());
+        ps.setString(2, advertising.getUuid().toString());
 
         ps.executeUpdate();
 
@@ -76,9 +79,9 @@ public class AdvertisingService implements Service<Advertising> {
 
         Connection connection = storage.getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM `Advertising` WHERE name=?");
+        PreparedStatement ps = connection.prepareStatement("DELETE FROM `Advertising` WHERE uuid=?");
 
-        ps.setString(1, advertising.getName());
+        ps.setString(1, advertising.getUuid().toString());
 
         ps.executeUpdate();
 
@@ -99,12 +102,13 @@ public class AdvertisingService implements Service<Advertising> {
 
         while (rs.next()) {
 
+            UUID uuid = UUID.fromString(rs.getString("uuid"));
             String name = rs.getString("name");
             String message = rs.getString("message");
             long time = rs.getLong("time");
 
 
-            Advertising advertising = new Advertising(name, message, time);
+            Advertising advertising = new Advertising(uuid, name, message, time);
             controller.getElements().add(advertising);
 
         }

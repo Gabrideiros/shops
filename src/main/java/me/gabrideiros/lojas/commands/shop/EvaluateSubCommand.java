@@ -4,6 +4,7 @@ import me.gabrideiros.lojas.Main;
 import me.gabrideiros.lojas.commands.CommandBase;
 import me.gabrideiros.lojas.commands.SubCommand;
 import me.gabrideiros.lojas.controllers.ShopController;
+import me.gabrideiros.lojas.inventory.ShopInventory;
 import me.gabrideiros.lojas.models.Shop;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -13,11 +14,13 @@ import org.bukkit.entity.Player;
 public class EvaluateSubCommand extends SubCommand {
 
     private final ShopController controller;
+    private final ShopInventory inventory;
 
-    public EvaluateSubCommand(Main plugin, CommandBase command, ShopController controller) {
-        super(plugin, command, "avaliar", "§c[!] Utilize /loja avaliar <nick> <nota>.", null, null);
+    public EvaluateSubCommand(Main plugin, CommandBase command, ShopController controller, ShopInventory inventory) {
+        super(plugin, command, "avaliar", "§c[!] Utilize /loja avaliar <nick>.", null, null);
 
         this.controller = controller;
+        this.inventory = inventory;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class EvaluateSubCommand extends SubCommand {
 
         Player player = (Player) sender;
 
-        if (args.length < 3) {
+        if (args.length < 2) {
             player.sendMessage(getUsage());
             return;
         }
@@ -51,25 +54,6 @@ public class EvaluateSubCommand extends SubCommand {
             return;
         }
 
-        try {
-
-            Integer.parseInt(args[2]);
-
-        } catch (NumberFormatException e) {
-            player.sendMessage("§cDigite apenas números válidos!");
-            return;
-        }
-
-        int note = Integer.parseInt(args[2]);
-
-        if (note < 1 || note > 5) {
-            player.sendMessage("§cVocê só pode dar uma nota de 1 a 5!");
-            return;
-        }
-
-        shop.getNote().put(player.getName(), note);
-
-        player.sendMessage("§aVocê avaliou a loja de §f" + shop.getName() + "§a como " + note + "§a estrelas!");
-
+        inventory.openNote(shop, player);
     }
 }

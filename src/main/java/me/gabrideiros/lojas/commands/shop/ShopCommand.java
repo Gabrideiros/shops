@@ -27,7 +27,7 @@ public class ShopCommand extends CommandBase {
 
         this.inventory = inventory;
 
-        register(new EvaluateSubCommand(plugin, this, shopController));
+        register(new EvaluateSubCommand(plugin, this, shopController, inventory));
         register(new DeleteSubCommand(plugin, this, shopController, advertisingController, shopService, advertisingService));
         register(new SetHomeSubCommand(plugin, this, shopController));
 

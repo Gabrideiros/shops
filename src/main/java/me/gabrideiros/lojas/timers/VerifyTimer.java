@@ -7,6 +7,7 @@ import me.gabrideiros.lojas.models.Advertising;
 import me.gabrideiros.lojas.models.Shop;
 import me.gabrideiros.lojas.services.AdvertisingService;
 import me.gabrideiros.lojas.services.ShopService;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.concurrent.TimeUnit;
@@ -43,9 +44,12 @@ public class VerifyTimer extends BukkitRunnable {
 
         for (Advertising advertising : advertisingController.getElements()) {
 
-            if (!advertising.endedTime(TimeUnit.DAYS.toMillis(4))) continue;
+            if (!advertising.endedTime(TimeUnit.DAYS.toMillis(7))) continue;
 
             advertisingService.delete(advertising);
+
+            Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "lp user " + advertising.getName() + " perm unset loja.propaganda");
+
         }
     }
 }

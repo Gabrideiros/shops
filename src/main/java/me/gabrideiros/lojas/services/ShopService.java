@@ -9,9 +9,7 @@ import me.gabrideiros.lojas.controllers.ShopController;
 import me.gabrideiros.lojas.database.Storage;
 import me.gabrideiros.lojas.models.Shop;
 import me.gabrideiros.lojas.utils.Locations;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Type;
 import java.sql.Connection;
@@ -19,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class ShopService implements Service<Shop> {
@@ -54,6 +53,7 @@ public class ShopService implements Service<Shop> {
 
         while (rs.next()) {
 
+            UUID uuid = UUID.fromString(rs.getString("uuid"));
             String name = rs.getString("name");
             Location location = Locations.deserialize(rs.getString("location"));
             int visits = rs.getInt("visits");
@@ -68,7 +68,7 @@ public class ShopService implements Service<Shop> {
 
             Map<String, Integer> note = gson.fromJson(rs.getString("notes"), mapType);
 
-            Shop shop = new Shop(name, location, visits, time, items, note, priority);
+            Shop shop = new Shop(uuid, name, location, visits, time, items, note, priority);
             controller.getElements().add(shop);
 
         }
@@ -84,15 +84,16 @@ public class ShopService implements Service<Shop> {
 
         Connection connection = storage.getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO `Shops` (`name`, `location`, `visits`, `time`, `items`, `notes`, `priority`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO `Shops` (`uuid`, `name`, `location`, `visits`, `time`, `items`, `notes`, `priority`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-        ps.setString(1, shop.getName());
-        ps.setString(2, Locations.serialize(shop.getLocation()));
-        ps.setInt(3, shop.getVisits());
-        ps.setLong(4, shop.getTime());
-        ps.setString(5, gson.toJson(shop.getItems()));
-        ps.setString(6, gson.toJson(shop.getNote()));
-        ps.setBoolean(7, shop.isPriority());
+        ps.setString(1, shop.getUuid().toString());
+        ps.setString(2, shop.getName());
+        ps.setString(3, Locations.serialize(shop.getLocation()));
+        ps.setInt(4, shop.getVisits());
+        ps.setLong(5, shop.getTime());
+        ps.setString(6, gson.toJson(shop.getItems()));
+        ps.setString(7, gson.toJson(shop.getNote()));
+        ps.setBoolean(8, shop.isPriority());
 
         ps.executeUpdate();
 
@@ -107,7 +108,7 @@ public class ShopService implements Service<Shop> {
 
         Connection connection = storage.getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("UPDATE `Shops` SET location=?, visits=?, time=?, items=?, notes=?, priority=? WHERE name=?");
+        PreparedStatement ps = connection.prepareStatement("UPDATE `Shops` SET location=?, visits=?, time=?, items=?, notes=?, priority=? WHERE uuid=?");
 
         ps.setString(1, Locations.serialize(shop.getLocation()));
         ps.setInt(2, shop.getVisits());
@@ -115,7 +116,7 @@ public class ShopService implements Service<Shop> {
         ps.setString(4, gson.toJson(shop.getItems()));
         ps.setString(5, gson.toJson(shop.getNote()));
         ps.setBoolean(6, shop.isPriority());
-        ps.setString(7, shop.getName());
+        ps.setString(7, shop.getUuid().toString());
 
         ps.executeUpdate();
 
@@ -128,9 +129,9 @@ public class ShopService implements Service<Shop> {
 
         Connection connection = storage.getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM `Shops` WHERE name=?");
+        PreparedStatement ps = connection.prepareStatement("DELETE FROM `Shops` WHERE uuid=?");
 
-        ps.setString(1, shop.getName());
+        ps.setString(1, shop.getUuid().toString());
 
         ps.executeUpdate();
 

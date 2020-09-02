@@ -71,7 +71,7 @@ public class ConfirmSubCommand extends SubCommand {
                     return;
                 }
 
-                Shop shop = new Shop(player.getName(), player.getLocation());
+                Shop shop = new Shop(player.getUniqueId(), player.getName(), player.getLocation());
 
                 CompletableFuture.runAsync(() -> shopService.insert(shop));
 

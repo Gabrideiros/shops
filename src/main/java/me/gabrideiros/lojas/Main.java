@@ -11,6 +11,7 @@ import me.gabrideiros.lojas.controllers.AdvertisingController;
 import me.gabrideiros.lojas.controllers.ShopController;
 import me.gabrideiros.lojas.database.*;
 import me.gabrideiros.lojas.inventory.ShopInventory;
+import me.gabrideiros.lojas.listener.BaseListener;
 import me.gabrideiros.lojas.services.AdvertisingService;
 import me.gabrideiros.lojas.services.ShopService;
 import me.gabrideiros.lojas.timers.AdvertisingTimer;
@@ -65,6 +66,8 @@ public class Main extends JavaPlugin {
 
         new InventoryListener(this);
 
+        getServer().getPluginManager().registerEvents(new BaseListener(this, shopController, inventory), this);
+
         registerCommands();
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new SaveTimer(shopService, advertisingService), 20 * 60 * saveTime, 20 * 60 * saveTime);
@@ -86,7 +89,7 @@ public class Main extends JavaPlugin {
         new SetCommand(this, shopController, shopService, advertisingController, advertisingService, inventory, economy);
         new ShopCommand(this, shopController, advertisingController, shopService, advertisingService, inventory);
         new SetPriorityCommand(this, shopController);
-        new AdvertisingCommand(this, shopController, advertisingController, advertisingService, economy);
+        new AdvertisingCommand(this, shopController, advertisingController, advertisingService);
     }
 
     public void openStorage() {

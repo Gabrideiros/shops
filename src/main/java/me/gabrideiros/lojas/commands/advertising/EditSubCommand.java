@@ -4,23 +4,20 @@ import me.gabrideiros.lojas.Main;
 import me.gabrideiros.lojas.commands.CommandBase;
 import me.gabrideiros.lojas.commands.SubCommand;
 import me.gabrideiros.lojas.controllers.AdvertisingController;
+import me.gabrideiros.lojas.listener.BaseListener;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Map;
-
 public class EditSubCommand extends SubCommand {
 
     private final AdvertisingController advertisingController;
-    private final Map<String, String> confirm;
 
-    public EditSubCommand(Main plugin, CommandBase command, AdvertisingController advertisingController, Map<String, String> confirm) {
-        super(plugin, command, "editar", "§c[!] Utilize /propaganda editar <mensagem>.", null, "loja.criar");
+    public EditSubCommand(Main plugin, CommandBase command, AdvertisingController advertisingController) {
+        super(plugin, command, "editar", "§c[!] Utilize /propaganda editar <mensagem>.", null, "loja.propaganda");
 
         this.advertisingController = advertisingController;
 
-        this.confirm = confirm;
     }
 
     @Override
@@ -40,12 +37,14 @@ public class EditSubCommand extends SubCommand {
             return;
         }
 
-        args[0] = "";
-        String message = String.join(" ", args);
+        BaseListener.messageList.add(player.getName());
 
-        confirm.put(player.getName(), message);
-
-        player.sendMessage("§aDigite '/propaganda confirmar' caso realmente deseja editar sua propaganda!");
+        player.sendMessage(new String[]{
+                "",
+                "§aDigite no chat a mensagem que deseja adicionar:",
+                "§7Caso deseja cancelar digite 'cancelar'!",
+                ""
+        });
 
         String name = player.getName();
 
@@ -53,9 +52,8 @@ public class EditSubCommand extends SubCommand {
             @Override
             public void run() {
 
-                confirm.remove(name);
+                BaseListener.getMessageList().remove(name);
             }
         }.runTaskLater(getPlugin(), 20 * 30);
-
     }
 }

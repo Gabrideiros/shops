@@ -13,6 +13,6 @@ public class ShopController extends Cache<Shop> implements Controller<Shop> {
 
     @Override
     public Shop getByPlayer(Player player) {
-        return get(shop -> shop.getName().equals(player.getName()));
+        return get(shop -> shop.getUuid().equals(player.getUniqueId()));
     }
 }

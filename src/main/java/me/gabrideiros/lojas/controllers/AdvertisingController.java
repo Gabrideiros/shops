@@ -13,6 +13,6 @@ public class AdvertisingController extends Cache<Advertising> implements Control
 
     @Override
     public Advertising getByPlayer(Player player) {
-        return get($ -> $.getName().equals(player.getName()));
+        return get($ -> $.getUuid().equals(player.getUniqueId()));
     }
 }

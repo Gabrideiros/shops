@@ -8,8 +8,10 @@ import dev.arantes.inventorymenulib.utils.InventorySize;
 import lombok.AllArgsConstructor;
 import me.gabrideiros.lojas.Main;
 import me.gabrideiros.lojas.enums.FilterType;
+import me.gabrideiros.lojas.listener.BaseListener;
 import me.gabrideiros.lojas.models.Shop;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -64,7 +66,10 @@ public class ShopInventory {
                                 .setHead($.getName())
                                 .setLore(
                                         "",
-                                        "§7Visitas: §f" + $.getVisits(), "",
+                                        "§7Visitas: §f" + $.getVisits(),
+                                        "§7Nota média: " + $.getNotesString(),
+                                        "§7Tempo: §f" + $.getTimeFormatted(),
+                                        "",
                                         "§7Clique esquerdo: §fPara se teleportar",
                                         "§7Clique direito: §fPara ver informações")
                                 .addAction(ClickType.LEFT, event -> teleport(player, $))
@@ -75,10 +80,10 @@ public class ShopInventory {
         PaginatedGUI paginatedGUI = new PaginatedGUIBuilder(
                 "Lojas",
                 "xxxxxxxxx" +
-                        "xxxxxxxxx" +
+                        "x#######x" +
                         "x#######x" +
                         "<#######>" +
-                        "xxxxxxxxx"
+                        "x#######x"
         )
                 .setHotbarButton((byte) 3,
                 new ItemButton(
@@ -135,6 +140,23 @@ public class ShopInventory {
                 .setButton(52, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
 
                 .setButton(53, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
+                .setButton(9, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
+                .setButton(17, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
+                .setButton(18, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
+                .setButton(26, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
+                .setButton(27, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
+                .setButton(35, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
+                .setButton(36, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
+                .setButton(44, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
+
 
                 .setContent(items)
 
@@ -237,6 +259,57 @@ public class ShopInventory {
 
     }
 
+    public void openNote(Shop shop, Player player) {
+
+        InventoryGUI gui = new InventoryGUI("Avaliar loja", InventorySize.ONE_ROW);
+
+        gui.setButton(2,
+                getNote(shop,
+                        "http://textures.minecraft.net/texture/d55fc2c1bae8e08d3e426c17c455d2ff9342286dffa3c7c23f4bd365e0c3fe",
+                        1,
+                         player
+                ));
+
+        gui.setButton(3,
+                getNote(shop,
+                        "http://textures.minecraft.net/texture/dc61b04e12a879767b3b72d69627f29a83bdeb6220f5dc7bea2eb2529d5b097",
+                        2,
+                        player
+                ));
+
+        gui.setButton(4,
+                getNote(shop,
+                        "http://textures.minecraft.net/texture/6823f77558ca6060b6dc6a4d4b1d86c1a5bee7081677bbc336ccb92fbd3ee",
+                        3,
+                        player
+                ));
+
+        gui.setButton(5,
+                getNote(shop,
+                        "http://textures.minecraft.net/texture/91b9c4d6f7208b1424f8595bfc1b85ccaaee2c5b9b41e0f564d4e0aca959",
+                        4,
+                        player
+                ));
+
+        gui.setButton(6,
+                getNote(shop,
+                        "http://textures.minecraft.net/texture/bc1415973b42f8286f948e2140992b9a29d80965593b14553d644f4feafb7",
+                        5,
+                        player
+                ));
+
+        gui.setButton(0, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
+        gui.setButton(1, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
+
+        gui.setButton(7, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
+        gui.setButton(8, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
+
+
+        gui.setDefaultCancell(true);
+
+        gui.show(player);
+    }
+
     public void openInfo(Shop shop, Player player) {
 
         InventoryGUI gui = new InventoryGUI("Adicionar Item", InventorySize.ONE_ROW);
@@ -263,6 +336,15 @@ public class ShopInventory {
 
     private void teleport(Player player, Shop shop) {
 
+        if (player.hasPermission("loja.bypass")) {
+            player.teleport(shop.getLocation());
+            player.sendMessage("§aVocê foi teleportado para a loja de §f" + shop.getName() + "§a.");
+
+            if (!shop.getName().equals(player.getName())) shop.setVisits(shop.getVisits() + 1);
+            return;
+        }
+
+        BaseListener.getTeleport().add(player.getName());
         player.closeInventory();
         player.sendMessage("§aVocê será teleportado em 3 segundos!");
 
@@ -271,25 +353,84 @@ public class ShopInventory {
             @Override
             public void run() {
 
-                player.teleport(shop.getLocation());
-                player.sendMessage("§aVocê foi teleportado para a loja de §f" + shop.getName() + "§a.");
+                if (BaseListener.getTeleport().contains(player.getName())) {
+                    player.teleport(shop.getLocation());
+                    player.sendMessage("§aVocê foi teleportado para a loja de §f" + shop.getName() + "§a.");
 
-                if (!shop.getName().equals(player.getName())) shop.setVisits(shop.getVisits() + 1);
+                    BaseListener.getTeleport().remove(player.getName());
 
+                    if (!shop.getName().equals(player.getName())) shop.setVisits(shop.getVisits() + 1);
+                }
             }
         }.runTaskLater(plugin, 20L * 3);
+    }
+
+    public ItemButton getNote(Shop shop, String skull, int note, Player player) {
+        return new ItemButton(
+                ItemButton.getSkull(skull))
+                .setName("§a" + note + " estrela")
+                .setLore("§7Clique para avaliar esta loja!")
+                .setDefaultAction(event -> {
+
+                    player.closeInventory();
+
+                    shop.getNote().put(player.getName(), note);
+
+                    player.sendMessage("§aVocê avaliou a loja de §f" + shop.getName() + "§a como " + note + "§a estrelas!");
+                });
     }
 
     public ItemButton getItems(Shop shop, ItemStack item, int position) {
 
         return new ItemButton(item)
-                .addLore("", "§7Clique com um item para adicionar!")
-                .setDefaultAction(event -> {
+                .addLore(
+                        "",
+                        "§7Clique esquerdo: §fPara adicionar um item",
+                        "§7Clique direito: §fPara remover um item",
+                        "§7Clique scroll: §fPara renomear um item"
+                        )
+                .addAction(ClickType.LEFT, event -> {
+
                     ItemStack cursor = event.getCursor();
                     if (cursor == null || cursor.getType() == Material.AIR) return;
-                    event.setCurrentItem(new ItemButton(cursor.clone()).addLore("", "§7Clique com um item para adicionar!").getItem());
+                    event.setCurrentItem(new ItemButton(cursor.clone())
+                            .addLore(
+                                    "",
+                                    "§7Clique esquerdo: §fPara adicionar um item",
+                                    "§7Clique direito: §fPara remover um item",
+                                    "§7Clique scroll: §fPara renomear um item"
+                            )
+                            .getItem());
 
                     shop.getItems().add(position, ItemButton.toBase64(cursor));
+                })
+                .addAction(ClickType.RIGHT, event -> {
+
+                    event.setCurrentItem(new ItemButton(Material.BARRIER, "§c=//=")
+                            .addLore(
+                                    "",
+                                    "§7Clique esquerdo: §fPara adicionar um item",
+                                    "§7Clique direito: §fPara remover um item",
+                                    "§7Clique scroll: §fPara renomear um item"
+                            )
+                            .getItem());
+                    shop.getItems().remove(position);
+                })
+                .addAction(ClickType.MIDDLE, event ->  {
+
+                    Player player = (Player) event.getWhoClicked();
+
+                    player.closeInventory();
+
+                    BaseListener.getNameMap().put(player.getName(), position);
+
+                    player.sendMessage(new String[]{
+                            "",
+                            "§aDigite no chat o nome que deseja adicionar:",
+                            "§7Caso deseja cancelar digite 'cancelar'!",
+                            ""
+                    });
+
                 });
     }
 

@@ -6,15 +6,13 @@ import lombok.Data;
 import me.gabrideiros.lojas.utils.TimeFormatter;
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
 public class Shop {
 
+    private UUID uuid;
     private String name;
     private Location location;
     private int visits;
@@ -23,7 +21,8 @@ public class Shop {
     private Map<String, Integer> note;
     private boolean priority;
 
-    public Shop(String name, Location location) {
+    public Shop(UUID uuid, String name, Location location) {
+        this.uuid = uuid;
         this.name = name;
         this.location = location;
         this.visits = 0;
