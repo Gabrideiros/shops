@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,41 +16,36 @@ public class AdvertisingTimer extends BukkitRunnable {
 
     private final AdvertisingController advertisingController;
 
-    private int time = -1;
+    private int time = 0;
 
     public AdvertisingTimer(AdvertisingController advertisingController) {
         this.advertisingController = advertisingController;
     }
 
     @Override
+
     public void run() {
 
         List<Advertising> list = new ArrayList<>(advertisingController.getElements());
 
-        list.sort(Comparator.comparingLong(Advertising::getTime).reversed());
+        list.sort((a1,a2) -> Long.compare(a2.getTime(), a1.getTime()));
+        Collections.reverse(list);
 
-        for (int i = time; i < list.size(); ++i) {
+        if (time == list.size()) {
+            time = 0;
+        }
 
-            try {
+        Advertising advertising = list.get(time);
+        time++;
 
-                Advertising advertising = list.get(i);
-                time++;
-
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.sendMessage("");
-                    new FancyMessage("§6[§lPROPAGANDA§6] ")
-                            .text(advertising.getMessage().replace("&", "§"))
-                            .hover("§7Clique para ver informações da loja de " + advertising.getName() + "§7!")
-                            .command("/loja " + advertising.getName())
-                            .send(player);
-                    player.sendMessage("");
-                }
-
-                return;
-
-            } catch (IndexOutOfBoundsException ignored) {
-
-            }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage("");
+            new FancyMessage("§6[§lPROPAGANDA§6] ")
+                    .text(advertising.getMessage().replace("&", "§"))
+                    .hover("§7Clique para ver informações da loja de " + advertising.getName() + "§7!")
+                    .command("/loja " + advertising.getName())
+                    .send(player);
+            player.sendMessage("");
         }
     }
 }

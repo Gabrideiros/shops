@@ -82,6 +82,7 @@ public class PoolingDatabase implements Storage {
         ps.executeUpdate();
 
         close(ps, null);
+        connection.close();
     }
 
     @Override

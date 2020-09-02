@@ -50,6 +50,7 @@ public class AdvertisingService implements Service<Advertising> {
         ps.executeUpdate();
 
         storage.close(ps, null);
+        connection.close();
 
         controller.addElement(advertising);
 
@@ -69,6 +70,7 @@ public class AdvertisingService implements Service<Advertising> {
         ps.executeUpdate();
 
         storage.close(ps, null);
+        connection.close();
 
 
     }
@@ -86,6 +88,7 @@ public class AdvertisingService implements Service<Advertising> {
         ps.executeUpdate();
 
         storage.close(ps, null);
+        connection.close();
 
         controller.getElements().remove(advertising);
     }
@@ -116,6 +119,7 @@ public class AdvertisingService implements Service<Advertising> {
         plugin.getLogger().log(Level.INFO, "Foram carregados {0} propagandas!", controller.getElements().size());
 
         storage.close(ps, rs);
+        connection.close();
     }
 
     public void saveAll() {

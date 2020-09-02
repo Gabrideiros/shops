@@ -29,8 +29,8 @@ public class AdvertisingCommand extends CommandBase {
         if (args.length < 1) {
             sender.sendMessage(new String[]{
                     "",
-                    "§7 * §e/propaganda criar <mensagem>§7 - Para criar uma propaganda.",
-                    "§7 * §e/propaganda editar <mensagem>§7 - Para editar sua propaganda.",
+                    "§7 * §e/propaganda criar§7 - Para criar uma propaganda.",
+                    "§7 * §e/propaganda editar§7 - Para editar sua propaganda.",
                     "§7 * §e/propaganda confirmar §7 - Para confirmar uma ação.",
                     ""
             });
