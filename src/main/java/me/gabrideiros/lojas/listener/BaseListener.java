@@ -1,6 +1,6 @@
 package me.gabrideiros.lojas.listener;
 
-import dev.arantes.inventorymenulib.buttons.ItemButton;
+import me.gabrideiros.lojas.inventory.lib.buttons.ItemButton;
 import lombok.Getter;
 import me.gabrideiros.lojas.Main;
 import me.gabrideiros.lojas.controllers.ShopController;

@@ -1,18 +1,17 @@
 package me.gabrideiros.lojas.inventory;
 
-import dev.arantes.inventorymenulib.PaginatedGUIBuilder;
-import dev.arantes.inventorymenulib.buttons.ItemButton;
-import dev.arantes.inventorymenulib.menus.InventoryGUI;
-import dev.arantes.inventorymenulib.menus.PaginatedGUI;
-import dev.arantes.inventorymenulib.utils.InventorySize;
+import me.gabrideiros.lojas.inventory.lib.PaginatedGUIBuilder;
+import me.gabrideiros.lojas.inventory.lib.buttons.ItemButton;
+import me.gabrideiros.lojas.inventory.lib.menus.InventoryGUI;
+import me.gabrideiros.lojas.inventory.lib.menus.PaginatedGUI;
+import me.gabrideiros.lojas.inventory.lib.utils.InventorySize;
+import dev.dbassett.skullcreator.SkullCreator;
 import lombok.AllArgsConstructor;
 import me.gabrideiros.lojas.Main;
 import me.gabrideiros.lojas.enums.FilterType;
 import me.gabrideiros.lojas.listener.BaseListener;
 import me.gabrideiros.lojas.models.Shop;
-import me.gabrideiros.lojas.utils.Skulls;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +19,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,15 +108,15 @@ public class ShopInventory {
 
                 .setPreviousPageItem(Material.ARROW, 1, "§c← Página anterior")
 
-                .setButton(2, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/6adcf96106613a33d3d2a464adb1b1a5c5e0cb11dce72926b599943e363df")).setName(""))
+                .setButton(2, new ItemButton(SkullCreator.itemFromUrl("http://textures.minecraft.net/texture/6adcf96106613a33d3d2a464adb1b1a5c5e0cb11dce72926b599943e363df")).setName(""))
 
-                .setButton(3, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/7bff8211e3d9d16b4ca2c20cd2a6f99cce8fe4d98ef5ca5516f51f25cf1c31")).setName(""))
+                .setButton(3, new ItemButton(SkullCreator.itemFromUrl("http://textures.minecraft.net/texture/7bff8211e3d9d16b4ca2c20cd2a6f99cce8fe4d98ef5ca5516f51f25cf1c31")).setName(""))
 
-                .setButton(4, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/9c342719a038268e36953aaaeb73eda82de681b23a47891a3ffe7fbe540a312")).setName(""))
+                .setButton(4, new ItemButton(SkullCreator.itemFromUrl("http://textures.minecraft.net/texture/9c342719a038268e36953aaaeb73eda82de681b23a47891a3ffe7fbe540a312")).setName(""))
 
-                .setButton(5, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/42cd5a1b5288caaa21a6acd4c98ceafd4c1588c8b2026c88b70d3c154d39bab")).setName(""))
+                .setButton(5, new ItemButton(SkullCreator.itemFromUrl("http://textures.minecraft.net/texture/42cd5a1b5288caaa21a6acd4c98ceafd4c1588c8b2026c88b70d3c154d39bab")).setName(""))
 
-                .setButton(6, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/f38d2759569d515d2454d4a7891a94cc63ddfe72d03bfdf76f1d4277d590")).setName(""))
+                .setButton(6, new ItemButton(SkullCreator.itemFromUrl("http://textures.minecraft.net/texture/f38d2759569d515d2454d4a7891a94cc63ddfe72d03bfdf76f1d4277d590")).setName(""))
 
                 .setButton(0, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
 
@@ -370,7 +368,7 @@ public class ShopInventory {
 
     public ItemButton getNote(Shop shop, String skull, int note, Player player) {
         return new ItemButton(
-                Skulls.getSkull(skull))
+                SkullCreator.itemFromUrl(skull))
                 .setName("§a" + note + " estrela(s)")
                 .setLore("§7Clique para avaliar esta loja!")
                 .setDefaultAction(event -> {

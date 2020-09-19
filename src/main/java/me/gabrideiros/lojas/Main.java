@@ -1,6 +1,6 @@
 package me.gabrideiros.lojas;
 
-import dev.arantes.inventorymenulib.listeners.InventoryListener;
+import me.gabrideiros.lojas.inventory.lib.listeners.InventoryListener;
 import lombok.Getter;
 import me.gabrideiros.lojas.commands.advertising.AdvertisingCommand;
 import me.gabrideiros.lojas.commands.priorityshop.PriorityCommand;
