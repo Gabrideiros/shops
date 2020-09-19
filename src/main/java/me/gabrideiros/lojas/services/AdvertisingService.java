@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -34,92 +35,117 @@ public class AdvertisingService implements Service<Advertising> {
 
     }
 
-    @SneakyThrows
     @Override
     public void insert(Advertising advertising) {
 
-        Connection connection = storage.getConnection();
+        try {
 
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO `Advertising` (`uuid`, `name`, `message`, `time`) VALUES (?, ?, ?, ?)");
+            if (storage.getConnection().isClosed()) storage.openConnection();
 
-        ps.setString(1, advertising.getUuid().toString());
-        ps.setString(2, advertising.getName());
-        ps.setString(3, advertising.getMessage());
-        ps.setLong(4, advertising.getTime());
+            Connection connection = storage.getConnection();
 
-        ps.executeUpdate();
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO `Advertising` (`uuid`, `name`, `message`, `time`) VALUES (?, ?, ?, ?)");
 
-        storage.close(ps, null);
-        connection.close();
+            ps.setString(1, advertising.getUuid().toString());
+            ps.setString(2, advertising.getName());
+            ps.setString(3, advertising.getMessage());
+            ps.setLong(4, advertising.getTime());
 
-        controller.addElement(advertising);
+            ps.executeUpdate();
 
+            storage.close(ps, null);
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            controller.addElement(advertising);
+        }
     }
 
-    @SneakyThrows
     @Override
     public void update(Advertising advertising) {
 
-        Connection connection = storage.getConnection();
+        try {
 
-        PreparedStatement ps = connection.prepareStatement("UPDATE `Advertising` SET message=? WHERE uuid=?");
+            if (storage.getConnection().isClosed()) storage.openConnection();
 
-        ps.setString(1, advertising.getMessage());
-        ps.setString(2, advertising.getUuid().toString());
+            Connection connection = storage.getConnection();
 
-        ps.executeUpdate();
+            PreparedStatement ps = connection.prepareStatement("UPDATE `Advertising` SET message=? WHERE uuid=?");
 
-        storage.close(ps, null);
-        connection.close();
+            ps.setString(1, advertising.getMessage());
+            ps.setString(2, advertising.getUuid().toString());
 
+            ps.executeUpdate();
 
+            storage.close(ps, null);
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    @SneakyThrows
     @Override
     public void delete(Advertising advertising) {
 
-        Connection connection = storage.getConnection();
+        try {
 
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM `Advertising` WHERE uuid=?");
+            if (storage.getConnection().isClosed()) storage.openConnection();
 
-        ps.setString(1, advertising.getUuid().toString());
+            Connection connection = storage.getConnection();
 
-        ps.executeUpdate();
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM `Advertising` WHERE uuid=?");
 
-        storage.close(ps, null);
-        connection.close();
+            ps.setString(1, advertising.getUuid().toString());
 
-        controller.getElements().remove(advertising);
+            ps.executeUpdate();
+
+            storage.close(ps, null);
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            controller.getElements().remove(advertising);
+        }
     }
 
-    @SneakyThrows
     @Override
     public void load() {
 
-        Connection connection = storage.getConnection();
+        try {
 
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM `Advertising`;");
+            if (storage.getConnection().isClosed()) storage.openConnection();
 
-        ResultSet rs = ps.executeQuery();
+            Connection connection = storage.getConnection();
 
-        while (rs.next()) {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `Advertising`;");
 
-            UUID uuid = UUID.fromString(rs.getString("uuid"));
-            String name = rs.getString("name");
-            String message = rs.getString("message");
-            long time = rs.getLong("time");
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                UUID uuid = UUID.fromString(rs.getString("uuid"));
+                String name = rs.getString("name");
+                String message = rs.getString("message");
+                long time = rs.getLong("time");
 
 
-            Advertising advertising = new Advertising(uuid, name, message, time);
-            controller.getElements().add(advertising);
+                Advertising advertising = new Advertising(uuid, name, message, time);
+                controller.getElements().add(advertising);
 
+            }
+
+            storage.close(ps, rs);
+            connection.close();
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            plugin.getLogger().log(Level.INFO, "Foram carregados {0} propagandas!", controller.getElements().size());
         }
-
-        plugin.getLogger().log(Level.INFO, "Foram carregados {0} propagandas!", controller.getElements().size());
-
-        storage.close(ps, rs);
-        connection.close();
     }
 
     public void saveAll() {

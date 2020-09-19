@@ -32,6 +32,11 @@ public class CreateSubCommand extends SubCommand {
 
         Player player = (Player) sender;
 
+        if (!player.getWorld().getName().equals("MundoPlot")) {
+            player.sendMessage("§cVocê só pode criar uma loja no mundo de terrenos!");
+            return;
+        }
+
         if (economy.getBalance(player) < 250000) {
             player.sendMessage("§cVocê precisa de 250k para criar uma loja!");
             return;

@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class PoolingDatabase implements Storage {
 
@@ -45,10 +46,18 @@ public class PoolingDatabase implements Storage {
 
     }
 
-    @SneakyThrows
     @Override
     public Connection getConnection() {
-        return dataSource.getConnection();
+        
+        Connection connection = null;
+        
+        try {
+            connection = dataSource.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return connection;
     }
 
     public void openConnection() {
@@ -62,38 +71,50 @@ public class PoolingDatabase implements Storage {
         config.setUsername(username);
         config.setPassword(password);
 
-        config.setMaximumPoolSize(10);
         config.addDataSourceProperty("autoReconnect", "true");
+
+        config.setMaximumPoolSize(20);
+        config.setConnectionTimeout(300000);
+        config.setConnectionTimeout(120000);
+        config.setLeakDetectionThreshold(300000);
 
         dataSource = new HikariDataSource(config);
 
     }
 
     @Override
-    @SneakyThrows
     public void makeTable() {
 
-        Connection connection = getConnection();
+        try {
+            Connection connection = getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Shops` (uuid LONGTEXT, name VARCHAR(16), location VARCHAR(100), visits INTEGER, time LONG, message LONGTEXT, items LONGTEXT, notes LONGTEXT, priority BOOLEAN)");
-        ps.executeUpdate();
+            PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Shops` (uuid LONGTEXT, name VARCHAR(16), location LONGTEXT, visits INTEGER, time LONG, maxtime LONG, message LONGTEXT, items LONGTEXT, notes LONGTEXT, priority BOOLEAN)");
+            ps.executeUpdate();
 
-        ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Advertising` (uuid LONGTEXT, name VARCHAR(16), message LONGTEXT, time LONG)");
-        ps.executeUpdate();
+            ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Advertising` (uuid LONGTEXT, name VARCHAR(16), message LONGTEXT, time LONG)");
+            ps.executeUpdate();
 
-        close(ps, null);
-        connection.close();
+            close(ps, null);
+            connection.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    @SneakyThrows
     public void close(PreparedStatement ps, ResultSet rs) {
-        if (ps != null) ps.close();
-        if (rs != null) rs.close();
+        try {
+            if (ps != null) ps.close();
+            if (rs != null) rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void closeConnection() {
-        if (dataSource != null && !dataSource.isClosed()) {
+        if (dataSource != null && !dataSource
+                .isClosed()) {
             dataSource.close();
         }
     }

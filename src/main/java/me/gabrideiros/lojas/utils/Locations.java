@@ -5,13 +5,24 @@ import org.bukkit.Location;
 
 public class Locations {
 
-    public static String serialize(Location location) {
-        return location.getWorld().getName() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch();
+    public static String serialize(Location l) {
+
+        return l.getWorld().getName() + ','
+                + l.getX()   + ','
+                + l.getY()   + ','
+                + l.getZ()   + ','
+                + l.getYaw() + ','
+                + l.getPitch();
     }
 
-    public static Location deserialize(String location) {
-        String[] split = location.split(",");
-
-        return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+    public static Location deserialize(String s) {
+        String[] location = s.split(",");
+        return new Location(
+                Bukkit.getWorld(location[0]),
+                Double.parseDouble(location[1]),
+                Double.parseDouble(location[2]),
+                Double.parseDouble(location[3]),
+                Float .parseFloat (location[4]),
+                Float .parseFloat (location[5]));
     }
 }

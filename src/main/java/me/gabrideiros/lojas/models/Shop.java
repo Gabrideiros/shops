@@ -17,6 +17,7 @@ public class Shop {
     private Location location;
     private int visits;
     private long time;
+    private long maxtime;
     private List<String> items;
     private Map<String, Integer> note;
     private boolean priority;
@@ -27,6 +28,7 @@ public class Shop {
         this.location = location;
         this.visits = 0;
         this.time =  System.currentTimeMillis();
+        this.maxtime = 0;
         this.items = new ArrayList<>();
         this.note = new HashMap<>();
         this.priority = false;
@@ -50,8 +52,8 @@ public class Shop {
 
     }
 
-    public boolean endedTime(long time) {
-        return getTimeFormatted(time).equals("agora");
+    public boolean timeEnded(long time) {
+        return !getTimeFormatted(time).equals("agora");
     }
 
     public String getTimeFormatted(long time) {

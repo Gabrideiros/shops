@@ -26,13 +26,14 @@ public class VerifyTimer extends BukkitRunnable {
         for (Shop shop : shopController.getElements()) {
 
             if (shop.isPriority()) {
-                if (!shop.endedTime(TimeUnit.DAYS.toMillis(30))) continue;
+                if (shop.timeEnded(shop.getMaxtime())) continue;
                 shop.setPriority(false);
+                shop.setMaxtime(0);
                 shop.setTime(System.currentTimeMillis());
                 continue;
             }
 
-            if (!shop.endedTime(TimeUnit.DAYS.toMillis(7))) continue;
+            if (shop.timeEnded(TimeUnit.DAYS.toMillis(7))) continue;
 
             Advertising advertising = advertisingController.getByName(shop.getName());
 
@@ -44,7 +45,7 @@ public class VerifyTimer extends BukkitRunnable {
 
         for (Advertising advertising : advertisingController.getElements()) {
 
-            if (!advertising.endedTime(TimeUnit.DAYS.toMillis(7))) continue;
+            if (!advertising.timeEnded(TimeUnit.DAYS.toMillis(7))) continue;
 
             advertisingService.delete(advertising);
 

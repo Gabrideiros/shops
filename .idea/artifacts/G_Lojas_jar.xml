@@ -1,11 +1,10 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="G-Lojas:jar">
-    <output-path>$USER_HOME$/Documents/Minecraft Server/plugins</output-path>
+    <output-path>$PROJECT_DIR$/../Documents/Minecraft Server/plugins</output-path>
     <root id="archive" name="G-Lojas.jar">
       <element id="module-output" name="G-Lojas" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/samjakob/SpiGUI/v1.0/SpiGUI-v1.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/zaxxer/HikariCP/3.4.5/HikariCP-3.4.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

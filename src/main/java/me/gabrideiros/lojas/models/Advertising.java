@@ -22,7 +22,7 @@ public class Advertising {
         this.time = System.currentTimeMillis();
     }
 
-    public boolean endedTime(long time) {
+    public boolean timeEnded(long time) {
         return getTimeFormatted(time).equals("agora");
     }
 

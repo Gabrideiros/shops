@@ -10,6 +10,7 @@ import me.gabrideiros.lojas.Main;
 import me.gabrideiros.lojas.enums.FilterType;
 import me.gabrideiros.lojas.listener.BaseListener;
 import me.gabrideiros.lojas.models.Shop;
+import me.gabrideiros.lojas.utils.Skulls;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -62,16 +63,16 @@ public class ShopInventory {
                         new ItemButton(Material.SKULL_ITEM,
                                 3,
                                 1,
-                                $.isPriority() ? "§d[Prioritária] §aLoja de " + $.getName() : "§aLoja de " + $.getName())
+                                $.isPriority() ? "§b[Prioritária] §aLoja de §l" + $.getName() : "§aLoja de §l" + $.getName())
                                 .setHead($.getName())
                                 .setLore(
                                         "",
-                                        "§7Visitas: §f" + $.getVisits(),
-                                        "§7Nota média: " + $.getNotesString(),
-                                        "§7Tempo: §f" + $.getTimeFormatted(),
+                                        "§7⇧ Total de Visitas: §f" + $.getVisits(),
+                                        "§7✭ Nota média: " + $.getNotesString(),
+                                        "§7⌛ Tempo: §f" + $.getTimeFormatted(),
                                         "",
-                                        "§7Clique esquerdo: §fPara se teleportar",
-                                        "§7Clique direito: §fPara ver informações")
+                                        "§7Botão esquerdo: §fPara se teleportar",
+                                        "§7Botão direito: §fPara ver informações")
                                 .addAction(ClickType.LEFT, event -> teleport(player, $))
                                 .addAction(ClickType.RIGHT, event -> { player.closeInventory(); openShop($, player); })
         ).collect(Collectors.toList());
@@ -90,10 +91,10 @@ public class ShopInventory {
                         Material.HOPPER,
                         0,
                         1,
-                        "§aFiltrar lojas")
+                        "§eFiltrar lojas")
                         .setLore("§7Filtro selecionado:", "")
                         .addLore(Arrays.stream(FilterType.values()).map($ -> $.getType().equals(type.getType()) ? "§7 - §a" + $.getType() : "§7 - §f" + $.getType()).toArray(String[]::new))
-                        .addLore("", "§7Clique para filtrar!")
+                        .addLore("", "§7Clique §lAQUI §7para filtrar!")
                         .setDefaultAction(event -> openShops(player, type.next())
                 ))
 
@@ -102,22 +103,22 @@ public class ShopInventory {
                         Material.ARROW,
                         0,
                         1,
-                        "§aFechar")
+                        "§4✘ §cFechar §4✘")
                         .addAction(ClickType.LEFT, event -> player.closeInventory()))
 
-                .setNextPageItem(Material.ARROW, 1, "§aPróxima página")
+                .setNextPageItem(Material.ARROW, 1, "§cPróxima página →")
 
-                .setPreviousPageItem(Material.ARROW, 1, "§aPágina anterior")
+                .setPreviousPageItem(Material.ARROW, 1, "§c← Página anterior")
 
-                .setButton(2, new ItemButton(ItemButton.getSkull("http://textures.minecraft.net/texture/6adcf96106613a33d3d2a464adb1b1a5c5e0cb11dce72926b599943e363df")).setName(""))
+                .setButton(2, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/6adcf96106613a33d3d2a464adb1b1a5c5e0cb11dce72926b599943e363df")).setName(""))
 
-                .setButton(3, new ItemButton(ItemButton.getSkull("http://textures.minecraft.net/texture/7bff8211e3d9d16b4ca2c20cd2a6f99cce8fe4d98ef5ca5516f51f25cf1c31")).setName(""))
+                .setButton(3, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/7bff8211e3d9d16b4ca2c20cd2a6f99cce8fe4d98ef5ca5516f51f25cf1c31")).setName(""))
 
-                .setButton(4, new ItemButton(ItemButton.getSkull("http://textures.minecraft.net/texture/9c342719a038268e36953aaaeb73eda82de681b23a47891a3ffe7fbe540a312")).setName(""))
+                .setButton(4, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/9c342719a038268e36953aaaeb73eda82de681b23a47891a3ffe7fbe540a312")).setName(""))
 
-                .setButton(5, new ItemButton(ItemButton.getSkull("http://textures.minecraft.net/texture/42cd5a1b5288caaa21a6acd4c98ceafd4c1588c8b2026c88b70d3c154d39bab")).setName(""))
+                .setButton(5, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/42cd5a1b5288caaa21a6acd4c98ceafd4c1588c8b2026c88b70d3c154d39bab")).setName(""))
 
-                .setButton(6, new ItemButton(ItemButton.getSkull("http://textures.minecraft.net/texture/f38d2759569d515d2454d4a7891a94cc63ddfe72d03bfdf76f1d4277d590")).setName(""))
+                .setButton(6, new ItemButton(Skulls.getSkull("http://textures.minecraft.net/texture/f38d2759569d515d2454d4a7891a94cc63ddfe72d03bfdf76f1d4277d590")).setName(""))
 
                 .setButton(0, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""))
 
@@ -176,7 +177,7 @@ public class ShopInventory {
             try {
                 gui.setButton(i + 2, new ItemButton(ItemButton.fromBase64(shop.getItems().get(i))));
             } catch (IndexOutOfBoundsException e) {
-                gui.setButton(i + 2, new ItemButton(Material.BARRIER, "§c=//="));
+                gui.setButton(i + 2, new ItemButton(Material.BARRIER, "§4✘ §cNada §4✘"));
             }
         }
 
@@ -184,24 +185,34 @@ public class ShopInventory {
                 Material.SKULL_ITEM,
                 3,
                 1,
-                "§aLoja de " + shop.getName())
+                "§a[§l$§a] Loja de §l" + shop.getName() + " §a[§l$§a]")
                 .setHead(shop.getName())
         );
 
-        gui.setButton(17, new ItemButton(
+        gui.setButton(8, new ItemButton(
                 Material.WOOL,
                 5,
                 1,
-                "§aTeleportar-se",
-                "§7Clique para teleportar-se até a loja!")
+                "§a⇶ §lTeleportar-se",
+                "§8➥§7 Clique para teleportar-se até a loja!")
                 .setDefaultAction(event -> teleport(player, shop))
+        );
+
+        gui.setButton(26, new ItemButton(
+                Material.MAP,
+                "§6✭ Avaliar ✭",
+                "§8➥§7 §7Clique para avaliar a loja!")
+                .setDefaultAction(event ->  {
+                        player.closeInventory();
+                        player.performCommand("loja avaliar " + shop.getName());
+                })
         );
 
         gui.setButton(21, new ItemButton(
                 Material.COMPASS,
                 0,
                 1,
-                "§aVisitações",
+                "§c⇧ Visitações ⇧",
                 "§7Esta loja possui: §f" + shop.getVisits() + "§f visitas")
         );
 
@@ -209,7 +220,7 @@ public class ShopInventory {
                 Material.EMERALD,
                 0,
                 1,
-                "§aNota",
+                "§6✭ Nota ✭",
                 "§7Nota média desta loja: §f" + shop.getNotesString())
         );
 
@@ -217,7 +228,7 @@ public class ShopInventory {
                 Material.WATCH,
                 0,
                 1,
-                "§aTempo",
+                "§a⌛ Tempo ⌛",
                 "§7Esta loja esta aberta há: §f" + shop.getTimeFormatted())
         );
 
@@ -225,33 +236,25 @@ public class ShopInventory {
                 Material.ARROW,
                 0,
                 1,
-                "§aVoltar")
+                "§c← Voltar")
                 .setDefaultAction(event -> { player.closeInventory(); openShops(player, FilterType.VISITS); })
         );
 
         gui.setButton(0, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
         gui.setButton(1, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-
         gui.setButton(7, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-        gui.setButton(8, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-
         gui.setButton(10, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
         gui.setButton(11, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-
         gui.setButton(12, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
         gui.setButton(14, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-
         gui.setButton(15, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
         gui.setButton(16, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-
+        gui.setButton(17, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
         gui.setButton(18, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
         gui.setButton(19, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-
         gui.setButton(20, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
         gui.setButton(24, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-
         gui.setButton(25, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
-        gui.setButton(26, new ItemButton(Material.STAINED_GLASS_PANE, 7, 1, ""));
 
         gui.setDefaultAllCancell(true);
 
@@ -319,7 +322,7 @@ public class ShopInventory {
             try {
                 gui.setButton(i + 2, getItems(shop, ItemButton.fromBase64(shop.getItems().get(i)), i));
             } catch (IndexOutOfBoundsException e) {
-                gui.setButton(i + 2, getItems(shop, new ItemStack(Material.BARRIER), i).setName("§c=//="));
+                gui.setButton(i + 2, getItems(shop, new ItemStack(Material.BARRIER), i).setName("§4✘ §cNada §4✘"));
             }
         }
 
@@ -367,16 +370,15 @@ public class ShopInventory {
 
     public ItemButton getNote(Shop shop, String skull, int note, Player player) {
         return new ItemButton(
-                ItemButton.getSkull(skull))
-                .setName("§a" + note + " estrela")
+                Skulls.getSkull(skull))
+                .setName("§a" + note + " estrela(s)")
                 .setLore("§7Clique para avaliar esta loja!")
                 .setDefaultAction(event -> {
 
                     player.closeInventory();
 
                     shop.getNote().put(player.getName(), note);
-
-                    player.sendMessage("§aVocê avaliou a loja de §f" + shop.getName() + "§a como " + note + "§a estrelas!");
+                    player.sendMessage("§aVocê avaliou a loja de §f" + shop.getName() + "§a como " + note + "§a estrela(s)!");
                 });
     }
 
@@ -385,9 +387,9 @@ public class ShopInventory {
         return new ItemButton(item)
                 .addLore(
                         "",
-                        "§7Clique esquerdo: §fPara adicionar um item",
-                        "§7Clique direito: §fPara remover um item",
-                        "§7Clique scroll: §fPara renomear um item"
+                        "§7Botão esquerdo: §fPara adicionar um item",
+                        "§7Botão direito: §fPara remover um item",
+                        "§7Botão scroll: §fPara renomear um item"
                         )
                 .addAction(ClickType.LEFT, event -> {
 
@@ -396,9 +398,9 @@ public class ShopInventory {
                     event.setCurrentItem(new ItemButton(cursor.clone())
                             .addLore(
                                     "",
-                                    "§7Clique esquerdo: §fPara adicionar um item",
-                                    "§7Clique direito: §fPara remover um item",
-                                    "§7Clique scroll: §fPara renomear um item"
+                                    "§7Botão esquerdo: §fPara adicionar um item",
+                                    "§7Botão direito: §fPara remover um item",
+                                    "§7Botão scroll: §fPara renomear um item"
                             )
                             .getItem());
 
@@ -406,12 +408,12 @@ public class ShopInventory {
                 })
                 .addAction(ClickType.RIGHT, event -> {
 
-                    event.setCurrentItem(new ItemButton(Material.BARRIER, "§c=//=")
+                    event.setCurrentItem(new ItemButton(Material.BARRIER, "§4✘ §cNada §4✘")
                             .addLore(
                                     "",
-                                    "§7Clique esquerdo: §fPara adicionar um item",
-                                    "§7Clique direito: §fPara remover um item",
-                                    "§7Clique scroll: §fPara renomear um item"
+                                    "§7Botão esquerdo: §fPara adicionar um item",
+                                    "§7Botão direito: §fPara remover um item",
+                                    "§7Botão scroll: §fPara renomear um item"
                             )
                             .getItem());
                     shop.getItems().remove(position);

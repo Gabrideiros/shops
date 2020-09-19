@@ -62,7 +62,7 @@ public class MySQLDatabase implements Storage {
 
         Connection connection = getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Shops` (uuid LONGTEXT, name VARCHAR(16), location VARCHAR(100), visits INTEGER, time LONG, message LONGTEXT, items LONGTEXT, notes LONGTEXT, priority BOOLEAN)");
+        PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Shops` (uuid LONGTEXT, name VARCHAR(16), location LONGTEXT, visits INTEGER, time LONG, maxtime LONG, message LONGTEXT, items LONGTEXT, notes LONGTEXT, priority BOOLEAN)");
         ps.executeUpdate();
 
         ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `Advertising` (uuid LONGTEXT, name VARCHAR(16), message LONGTEXT, time LONG)");

@@ -3,7 +3,7 @@ package me.gabrideiros.lojas;
 import dev.arantes.inventorymenulib.listeners.InventoryListener;
 import lombok.Getter;
 import me.gabrideiros.lojas.commands.advertising.AdvertisingCommand;
-import me.gabrideiros.lojas.commands.priorityshop.SetPriorityCommand;
+import me.gabrideiros.lojas.commands.priorityshop.PriorityCommand;
 import me.gabrideiros.lojas.commands.setshop.SetCommand;
 import me.gabrideiros.lojas.commands.shop.ShopCommand;
 import me.gabrideiros.lojas.commands.shops.ShopsCommand;
@@ -88,7 +88,7 @@ public class Main extends JavaPlugin {
         new ShopsCommand(this, inventory);
         new SetCommand(this, shopController, shopService, advertisingController, advertisingService, inventory, economy);
         new ShopCommand(this, shopController, advertisingController, shopService, advertisingService, inventory);
-        new SetPriorityCommand(this, shopController);
+        new PriorityCommand(this, shopController);
         new AdvertisingCommand(this, shopController, advertisingController, advertisingService);
     }
 

@@ -9,7 +9,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class AdvertisingTimer extends BukkitRunnable {
@@ -30,6 +29,11 @@ public class AdvertisingTimer extends BukkitRunnable {
 
         list.sort((a1,a2) -> Long.compare(a2.getTime(), a1.getTime()));
         Collections.reverse(list);
+
+
+        if (list.size() < 1) {
+            return;
+        }
 
         if (time == list.size()) {
             time = 0;

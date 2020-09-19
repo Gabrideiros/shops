@@ -3,7 +3,6 @@ package me.gabrideiros.lojas.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import lombok.SneakyThrows;
 import me.gabrideiros.lojas.Main;
 import me.gabrideiros.lojas.controllers.ShopController;
 import me.gabrideiros.lojas.database.Storage;
@@ -15,6 +14,7 @@ import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,103 +42,138 @@ public class ShopService implements Service<Shop> {
 
     }
 
-    @SneakyThrows
     public void load() {
 
-        Connection connection = storage.getConnection();
+        try {
 
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM `Shops`;");
+            if (storage.getConnection().isClosed()) storage.openConnection();
 
-        ResultSet rs = ps.executeQuery();
+            Connection connection = storage.getConnection();
 
-        while (rs.next()) {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `Shops`;");
 
-            UUID uuid = UUID.fromString(rs.getString("uuid"));
-            String name = rs.getString("name");
-            Location location = Locations.deserialize(rs.getString("location"));
-            int visits = rs.getInt("visits");
-            long time = rs.getLong("time");
-            boolean priority = rs.getBoolean("priority");
+            ResultSet rs = ps.executeQuery();
 
-            Type listType = new TypeToken<List<String>>(){}.getType();
+            while (rs.next()) {
 
-            List<String> items = gson.fromJson(rs.getString("items"), listType);
+                UUID uuid = UUID.fromString(rs.getString("uuid"));
+                String name = rs.getString("name");
+                Location location = Locations.deserialize(rs.getString("location"));
+                int visits = rs.getInt("visits");
+                long time = rs.getLong("time");
+                long maxtime = rs.getLong("maxtime");
+                boolean priority = rs.getBoolean("priority");
 
-            Type mapType = new TypeToken<Map<String, Integer>>(){}.getType();
+                Type listType = new TypeToken<List<String>>() {
+                }.getType();
 
-            Map<String, Integer> note = gson.fromJson(rs.getString("notes"), mapType);
+                List<String> items = gson.fromJson(rs.getString("items"), listType);
 
-            Shop shop = new Shop(uuid, name, location, visits, time, items, note, priority);
-            controller.getElements().add(shop);
+                Type mapType = new TypeToken<Map<String, Integer>>() {
+                }.getType();
 
+                Map<String, Integer> note = gson.fromJson(rs.getString("notes"), mapType);
+
+                Shop shop = new Shop(uuid, name, location, visits, time, maxtime, items, note, priority);
+                controller.getElements().add(shop);
+
+            }
+
+            storage.close(ps, rs);
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            plugin.getLogger().log(Level.INFO, "Foram carregados {0} lojas!", controller.getElements().size());
         }
-
-        plugin.getLogger().log(Level.INFO, "Foram carregados {0} lojas!", controller.getElements().size());
-
-        storage.close(ps, rs);
-
     }
 
-    @SneakyThrows
     public void insert(Shop shop) {
 
-        Connection connection = storage.getConnection();
+        try {
 
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO `Shops` (`uuid`, `name`, `location`, `visits`, `time`, `items`, `notes`, `priority`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            if (storage.getConnection().isClosed()) storage.openConnection();
 
-        ps.setString(1, shop.getUuid().toString());
-        ps.setString(2, shop.getName());
-        ps.setString(3, Locations.serialize(shop.getLocation()));
-        ps.setInt(4, shop.getVisits());
-        ps.setLong(5, shop.getTime());
-        ps.setString(6, gson.toJson(shop.getItems()));
-        ps.setString(7, gson.toJson(shop.getNote()));
-        ps.setBoolean(8, shop.isPriority());
+            Connection connection = storage.getConnection();
 
-        ps.executeUpdate();
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO `Shops` (`uuid`, `name`, `location`, `visits`, `time`, `maxtime`, `items`, `notes`, `priority`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        storage.close(ps, null);
+            ps.setString(1, shop.getUuid().toString());
+            ps.setString(2, shop.getName());
+            ps.setString(3, Locations.serialize(shop.getLocation()));
+            ps.setInt(4, shop.getVisits());
+            ps.setLong(5, shop.getTime());
+            ps.setLong(6, shop.getMaxtime());
+            ps.setString(7, gson.toJson(shop.getItems()));
+            ps.setString(8, gson.toJson(shop.getNote()));
+            ps.setBoolean(9, shop.isPriority());
 
-        controller.addElement(shop);
+            ps.executeUpdate();
+
+            storage.close(ps, null);
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            controller.addElement(shop);
+        }
 
     }
 
-    @SneakyThrows
     public void update(Shop shop) {
 
-        Connection connection = storage.getConnection();
+        try {
 
-        PreparedStatement ps = connection.prepareStatement("UPDATE `Shops` SET location=?, visits=?, time=?, items=?, notes=?, priority=? WHERE uuid=?");
+            if (storage.getConnection().isClosed()) storage.openConnection();
 
-        ps.setString(1, Locations.serialize(shop.getLocation()));
-        ps.setInt(2, shop.getVisits());
-        ps.setLong(3, shop.getTime());
-        ps.setString(4, gson.toJson(shop.getItems()));
-        ps.setString(5, gson.toJson(shop.getNote()));
-        ps.setBoolean(6, shop.isPriority());
-        ps.setString(7, shop.getUuid().toString());
+            Connection connection = storage.getConnection();
 
-        ps.executeUpdate();
+            PreparedStatement ps = connection.prepareStatement("UPDATE `Shops` SET location=?, visits=?, time=?, maxtime=?, items=?, notes=?, priority=? WHERE uuid=?");
 
-        storage.close(ps, null);
+            ps.setString(1, Locations.serialize(shop.getLocation()));
+            ps.setInt(2, shop.getVisits());
+            ps.setLong(3, shop.getTime());
+            ps.setLong(4, shop.getMaxtime());
+            ps.setString(5, gson.toJson(shop.getItems()));
+            ps.setString(6, gson.toJson(shop.getNote()));
+            ps.setBoolean(7, shop.isPriority());
+            ps.setString(8, shop.getUuid().toString());
+
+            ps.executeUpdate();
+
+            storage.close(ps, null);
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    @SneakyThrows
     public void delete(Shop shop) {
 
-        Connection connection = storage.getConnection();
+        try {
 
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM `Shops` WHERE uuid=?");
+            if (storage.getConnection().isClosed()) storage.openConnection();
 
-        ps.setString(1, shop.getUuid().toString());
+            Connection connection = storage.getConnection();
 
-        ps.executeUpdate();
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM `Shops` WHERE uuid=?");
 
-        storage.close(ps, null);
+            ps.setString(1, shop.getUuid().toString());
 
-        controller.getElements().remove(shop);
+            ps.executeUpdate();
 
+            storage.close(ps, null);
+            connection.close();
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            controller.findAndRemove($ -> $.getName().equalsIgnoreCase(shop.getName()));
+        }
     }
 
     public void saveAll() {

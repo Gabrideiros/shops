@@ -34,7 +34,7 @@ public class TimeSubCommand extends SubCommand {
 
         Shop shop = controller.getByPlayer(player);
 
-        long time = shop.isPriority() ? TimeUnit.DAYS.toMillis(30) : TimeUnit.DAYS.toMillis(7);
+        long time = shop.isPriority() ? shop.getMaxtime() : TimeUnit.DAYS.toMillis(7);
 
         player.sendMessage("§aTempo restante: §f" + shop.getTimeFormatted(time));
 

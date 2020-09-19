@@ -43,7 +43,12 @@ public class RenewSubCommand extends SubCommand {
 
         Shop shop = controller.getByPlayer(player);
 
-        if (!shop.endedTime(TimeUnit.DAYS.toMillis(5))) {
+        if (shop.isPriority()) {
+            player.sendMessage("§cVocê não pode renovar sua loja prioritária!");
+            return;
+        }
+
+        if (shop.timeEnded(TimeUnit.DAYS.toMillis(5))) {
             player.sendMessage("§cVocê só pode renovar sua loja nas últimas 48 horas!");
             return;
         }
